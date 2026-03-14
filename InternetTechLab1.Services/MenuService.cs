@@ -1,5 +1,6 @@
 ﻿using System;
 using static System.Console;
+using System.Collections.Generic;
 using InternetTechLab1.Data.Rdbms;
 
 namespace InternetTechLab1.Services;
@@ -10,8 +11,16 @@ public class MenuService
     private readonly List<string>[] _subMenus;
     private readonly Dictionary<(int main, int sub), Func<ICommand>> _menuToCommandFactory;
 
+    private readonly IGitHubApiService _gitHabApiService;
+    private readonly IDatabaseService _databaseService;
+    private readonly IGitHubScrapingService _gitHabScrapingService;
+
     public MenuService()
     {
+        _databaseService = new GitHubRepository();
+        _gitHabApiService = new GitHubApiService();
+        _gitHabScrapingService = new GitHubScrapingService();
+
         _mainMenu = new List<string> 
         { 
             "Модуль A — Получение данных через API → сохранение в реляционную БД", 
@@ -21,20 +30,21 @@ public class MenuService
         
         _subMenus = new[] 
         {
-            new List<string> { "Получить данные о пользователе", "Репозитории", "Подписчики пользователя", "Текущий пользователь", "Посмотреть базу данных", "Очистить базу данных", "Выход" },
-            new List<string> { "Web Scraping по URL", "Выход" }
+            new List<string> { "Получить данные о текущем пользователе", "Репозитории", "Подписчики пользователя", "Посмотреть базу данных", "Очистить базу данных", "Выход" },
+            new List<string> { "Web Scraping по URL", "Посмотреть результаты Scraping", "Очистить базу данных", "Выход" }
         };
 
         _menuToCommandFactory = new Dictionary<(int main, int sub), Func<ICommand>>
         {
-            { (0, 0), () => new GetUserCommand(CreateGitHubService()) },
-            { (0, 1), () => new GetReposCommand(CreateGitHubService()) },
-            { (0, 2), () => new GetFollowersCommand(CreateGitHubService()) },
-            { (0, 3), () => new GetCurrentUserCommand(CreateGitHubService()) },
-            { (0, 4), () => new ShowDbCommand(CreateSqliteService()) },
-            { (0, 5), () => new ClearDbCommand(CreateSqliteService()) },
+            { (0, 0), () => new GetCurrentUserCommand(_gitHabApiService, _databaseService) },
+            { (0, 1), () => new GetReposCommand(_gitHabApiService, _databaseService) },
+            { (0, 2), () => new GetFollowersCommand(_gitHabApiService, _databaseService) },
+            { (0, 3), () => new ShowDbCommand(_databaseService, DataType.Api) },
+            { (0, 4), () => new ClearDbCommand(_databaseService, DataType.Api) },
 
-            { (1, 0), () => new WebScrapingCommand() },
+            { (1, 0), () => new WebScrapingCommand(_gitHabScrapingService, _databaseService) },
+            { (1, 1), () => new ShowDbCommand(_databaseService, DataType.Scraping) },
+            { (1, 2), () => new ClearDbCommand(_databaseService, DataType.Scraping) }
         };
     }
 
@@ -42,17 +52,29 @@ public class MenuService
     {
         while (true) 
         {
+            Clear();
             int mainChoice = ShowMenu(_mainMenu);
             if (mainChoice == _mainMenu.Count - 1) return;
-            Console.Clear();
 
-            int subChoice = ShowMenu(_subMenus[mainChoice]);
-
-            var key = (mainChoice, subChoice);
-            if (_menuToCommand.TryGetValue(key, out var command))
+            while (true) 
             {
                 Clear();
-                command.Execute();
+                int subChoice = ShowMenu(_subMenus[mainChoice]);
+
+                if (subChoice == _subMenus[mainChoice].Count - 1) break;
+
+                var key = (mainChoice, subChoice);
+                if (_menuToCommandFactory.TryGetValue(key, out var commandFactory))
+                {
+                    Clear();
+                    commandFactory().Execute();
+
+                    WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню");
+                    ReadKey();
+                } else 
+                {
+                    Console.WriteLine("Эта команда пока ничего не делает(");
+                }
             }
         }
     }
