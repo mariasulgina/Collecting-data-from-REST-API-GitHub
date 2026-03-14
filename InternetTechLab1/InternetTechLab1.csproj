@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\InternetTechLab1.Services\InternetTechLab1.Services.csproj" />
     <ProjectReference Include="..\InternetTechLab1.Data.NoSql\InternetTechLab1.Data.NoSql.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Data.NoSql\InternetTechLab1.Data.Rdbms.csproj" />
+    <ProjectReference Include="..\InternetTechLab1.Data.Rdbms\InternetTechLab1.Data.Rdbms.csproj" />
     <ProjectReference Include="..\InternetTechLab1.Models\InternetTechLab1.Models.csproj" />
   </ItemGroup>
 

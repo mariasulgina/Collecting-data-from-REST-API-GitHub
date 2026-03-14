@@ -1,10 +1,8 @@
-﻿using InternetTechLab1.Data.Rdbms;
-
-namespace InternetTechLab1.Services;
+﻿namespace InternetTechLab1.Services;
 
 public class GetFollowersCommand : ICommand
 {
-    public GetFollowersCommand(IGitHubApiService gitHubApiService, IDatabaseService databaseService)
+    public GetFollowersCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService)
     {
 
     }

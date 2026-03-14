@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InternetTechLab1.Services;
 
-public interface INonRelationalDatabaseService
+public interface INonRelationalDatabaseService : IDatabaseService
 {
     
 }

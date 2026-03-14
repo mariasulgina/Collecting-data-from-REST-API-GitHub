@@ -1,10 +1,8 @@
-﻿using InternetTechLab1.Data.Rdbms;
-
-namespace InternetTechLab1.Services;
+﻿namespace InternetTechLab1.Services;
 
 public class GetReposCommand : ICommand
 {
-    public GetReposCommand(IGitHubApiService gitHubApiService, IDatabaseService databaseService)
+    public GetReposCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService)
     {
 
     }

@@ -1,6 +1,8 @@
-﻿namespace InternetTechLab1.Data.Rdbms;
+﻿using InternetTechLab1.Services;
 
-public class GitHubRepository : IDatabaseService
+namespace InternetTechLab1.Data.Rdbms;
+
+public class GitHubRepository : IRelationalDatabaseService
 {
     //GitHubRepository → БД
     //использует GitHubDbContext

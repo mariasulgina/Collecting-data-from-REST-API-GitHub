@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace InternetTechLab1.Services;
+namespace InternetTechLab1.Data.NoSql;
 
-public interface IRelationalDatabaseService : IDatabaseService
+public class NoSqlSettings
 {
     
 }

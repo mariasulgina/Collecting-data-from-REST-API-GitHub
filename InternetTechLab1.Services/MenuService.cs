@@ -1,7 +1,6 @@
 ﻿using System;
 using static System.Console;
 using System.Collections.Generic;
-using InternetTechLab1.Data.Rdbms;
 
 namespace InternetTechLab1.Services;
 
@@ -12,14 +11,19 @@ public class MenuService
     private readonly Dictionary<(int main, int sub), Func<ICommand>> _menuToCommandFactory;
 
     private readonly IGitHubApiService _gitHabApiService;
-    private readonly IDatabaseService _databaseService;
     private readonly IGitHubScrapingService _gitHabScrapingService;
 
-    public MenuService()
+    private readonly IRelationalDatabaseService _relationalDb;
+    private readonly INonRelationalDatabaseService _nonRelationalDb;
+
+    public MenuService(IGitHubApiService gitHabApiService, IGitHubScrapingService gitHabScrapingService, 
+    IRelationalDatabaseService relationalDb, INonRelationalDatabaseService nonRelationalDb)
     {
-        _databaseService = new GitHubRepository();
-        _gitHabApiService = new GitHubApiService();
-        _gitHabScrapingService = new GitHubScrapingService();
+        _gitHabApiService = gitHabApiService;
+        _gitHabScrapingService = gitHabScrapingService;
+
+        _relationalDb = relationalDb;
+        _nonRelationalDb = nonRelationalDb;
 
         _mainMenu = new List<string> 
         { 
@@ -36,15 +40,15 @@ public class MenuService
 
         _menuToCommandFactory = new Dictionary<(int main, int sub), Func<ICommand>>
         {
-            { (0, 0), () => new GetCurrentUserCommand(_gitHabApiService, _databaseService) },
-            { (0, 1), () => new GetReposCommand(_gitHabApiService, _databaseService) },
-            { (0, 2), () => new GetFollowersCommand(_gitHabApiService, _databaseService) },
-            { (0, 3), () => new ShowDbCommand(_databaseService, DataType.Api) },
-            { (0, 4), () => new ClearDbCommand(_databaseService, DataType.Api) },
+            { (0, 0), () => new GetCurrentUserCommand(_gitHabApiService, _relationalDb) },
+            { (0, 1), () => new GetReposCommand(_gitHabApiService, _relationalDb) },
+            { (0, 2), () => new GetFollowersCommand(_gitHabApiService, _relationalDb) },
+            { (0, 3), () => new ShowDbCommand(_relationalDb) },
+            { (0, 4), () => new ClearDbCommand(_relationalDb) },
 
-            { (1, 0), () => new WebScrapingCommand(_gitHabScrapingService, _databaseService) },
-            { (1, 1), () => new ShowDbCommand(_databaseService, DataType.Scraping) },
-            { (1, 2), () => new ClearDbCommand(_databaseService, DataType.Scraping) }
+            { (1, 0), () => new WebScrapingCommand(_gitHabScrapingService, _nonRelationalDb) },
+            { (1, 1), () => new ShowDbCommand(_nonRelationalDb) },
+            { (1, 2), () => new ClearDbCommand(_nonRelationalDb) }
         };
     }
 
