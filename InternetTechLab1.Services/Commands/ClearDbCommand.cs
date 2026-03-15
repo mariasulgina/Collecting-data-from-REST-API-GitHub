@@ -7,7 +7,7 @@ public class ClearDbCommand : ICommand
         
     }
 
-    public void Execute() 
+    public async Task Execute() 
     {
         
     }

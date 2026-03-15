@@ -7,7 +7,7 @@ public class ShowDbCommand : ICommand
 
     }
 
-    public void Execute() 
+    public async Task Execute() 
     {
 
     }

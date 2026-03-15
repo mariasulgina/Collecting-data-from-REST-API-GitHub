@@ -7,5 +7,5 @@ namespace InternetTechLab1.Services;
 
 public interface IGitHubApiService
 {
-
+    Task<T?> GetFromApiGitHubInformationAsync<T>(string endpoint);
 }

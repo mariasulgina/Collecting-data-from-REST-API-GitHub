@@ -52,7 +52,7 @@ public class MenuService
         };
     }
 
-    public void Run() 
+    public async Task Run() 
     {
         while (true) 
         {
@@ -71,7 +71,7 @@ public class MenuService
                 if (_menuToCommandFactory.TryGetValue(key, out var commandFactory))
                 {
                     Clear();
-                    commandFactory().Execute();
+                    await commandFactory().Execute();
 
                     WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню");
                     ReadKey();

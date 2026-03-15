@@ -1,12 +1,39 @@
-﻿namespace InternetTechLab1.Models;
-using System.Text.Json.Serialization; 
+﻿using System.Text.Json.Serialization;
+
+namespace InternetTechLab1.Models;
 
 public class GitHubRepo
 {
-    public int id { get; set; }
-    public string? name { get; set; } //NameRepository
-    public string? full_name { get; set; } //FullNameRepository
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("full_name")]
+    public string? FullName { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("html_url")]
+    public string? HtmlUrl { get; set; } 
+
     [JsonPropertyName("private")]
-    public bool? IsPrivate { get; set; }
-    public GitHubUser? owner { get; set; } //owner
+    public bool IsPrivate { get; set; }
+
+    [JsonPropertyName("language")]
+    public string? Language { get; set; }
+
+    [JsonPropertyName("stargazers_count")]
+    public int StargazersCount { get; set; }
+
+    [JsonPropertyName("forks_count")]
+    public int ForksCount { get; set; }
+
+    [JsonPropertyName("owner")]
+    public GitHubUser? Owner { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime? CreatedAt { get; set; }
 }

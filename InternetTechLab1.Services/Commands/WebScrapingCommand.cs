@@ -12,7 +12,7 @@ public class WebScrapingCommand : ICommand
 
     }
 
-    public void Execute() 
+    public async Task Execute() 
     {
         
     }
