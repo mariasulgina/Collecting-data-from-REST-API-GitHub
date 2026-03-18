@@ -10,8 +10,9 @@ class Program
         GitHubScrapingService gitHubScrapingService = new();
         GitHubRepository gitHubRepository = new();
         ScrapingRepository scrapingRepository = new();
+        VisualizerService visualizerService = new();
 
-        MenuService menu = new MenuService(gitHubApiService, gitHubScrapingService, gitHubRepository, scrapingRepository);
+        MenuService menu = new MenuService(gitHubApiService, gitHubScrapingService, visualizerService, gitHubRepository, scrapingRepository);
         await menu.Run();
     }
 }

@@ -9,11 +9,13 @@ public abstract class GetGitHubInformationCommandBase : ICommand
 {
     protected readonly IGitHubApiService ApiService;
     protected readonly IRelationalDatabaseService DbService;
+    protected readonly IVisualizerService Visualizer;
 
-    protected GetGitHubInformationCommandBase(IGitHubApiService apiService, IRelationalDatabaseService dbService)
+    protected GetGitHubInformationCommandBase(IGitHubApiService apiService, IRelationalDatabaseService dbService, IVisualizerService visualizer)
     {
         ApiService = apiService;
         DbService = dbService;
+        Visualizer = visualizer;
     }
 
     public async Task Execute()

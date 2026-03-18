@@ -6,8 +6,9 @@ namespace InternetTechLab1.Services;
 
 public class GetReposCommand : GetGitHubInformationCommandBase
 {
-    public GetReposCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService)
-    : base(gitHubApiService, relationalDatabaseService) {} 
+    public GetReposCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService, 
+    IVisualizerService visualizerService)
+    : base(gitHubApiService, relationalDatabaseService, visualizerService) { }
 
     protected override async Task ExecuteGitHubLogic(string username)
     {
@@ -18,29 +19,10 @@ public class GetReposCommand : GetGitHubInformationCommandBase
         if (gitHubRepos != null && gitHubRepos.Count != 0)
         {
             DbService.SaveApiGitHubReposInformation(gitHubRepos);
-            WatchApiGitHubReposInformation(gitHubRepos);
+            Visualizer.ShowGitHubUser(gitHubRepos);
         } else
         {
             Console.WriteLine($"У пользователя {username} репозитории не найдены");
         }
-    }
-
-    private void WatchApiGitHubReposInformation(List<GitHubRepo> gitHubRepos) 
-    {
-        Console.WriteLine("\n" + new string(' ', 50));
-        Console.WriteLine($"Результат поиска: Найдено {gitHubRepos.Count} репозиториев");
-        Console.WriteLine(new string(' ', 50));
-
-        foreach (var repo in gitHubRepos)
-        {
-            Console.WriteLine($"   Репозиторий: {repo.Name}");
-            Console.WriteLine($"   URL: {repo.HtmlUrl}");
-            Console.WriteLine($"   Звезды: {repo.StargazersCount,-5} | 🍴 Форки: {repo.ForksCount}");
-            Console.WriteLine($"   Описание: {(string.IsNullOrEmpty(repo.Description) ? "Нет описания" : repo.Description)}");
-            Console.WriteLine($"   Язык: {repo.Language ?? "Не определен"}");
-            Console.WriteLine(new string('-', 30));
-        }
-
-        Console.WriteLine(new string(' ', 50));
     }
 }

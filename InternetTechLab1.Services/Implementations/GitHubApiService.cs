@@ -20,7 +20,7 @@ public class GitHubApiService : IGitHubApiService
         }
     }
 
-    public async Task<T?> GetFromApiGitHubInformationAsync<T>(string endpoint) 
+    public async Task<T?> GetFromApiGitHubInformationAsync<T>(string endpoint) //2 return
     {
         try
         {

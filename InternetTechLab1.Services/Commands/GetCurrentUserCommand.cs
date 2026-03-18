@@ -6,8 +6,9 @@ namespace InternetTechLab1.Services;
 
 public class GetCurrentUserCommand : GetGitHubInformationCommandBase
 {
-    public GetCurrentUserCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService)
-    : base(gitHubApiService, relationalDatabaseService) { }
+    public GetCurrentUserCommand(IGitHubApiService gitHubApiService, IRelationalDatabaseService relationalDatabaseService, 
+    IVisualizerService visualizerService)
+    : base(gitHubApiService, relationalDatabaseService, visualizerService) { }
 
     protected override async Task ExecuteGitHubLogic(string username)
     {
@@ -19,31 +20,11 @@ public class GetCurrentUserCommand : GetGitHubInformationCommandBase
         {
             DbService.SaveApiGitHubUserInformation(gitHubUser); 
             DbService.ShowAllUsers();
-            WatchApiGitHubUserInformation(gitHubUser);
+            Visualizer.ShowGitHubUser(gitHubUser);
         } 
         else
         {
             Console.WriteLine($"Пользователь {username} не найден");
         }
-    }
-
-    private void WatchApiGitHubUserInformation(GitHubUser user) 
-    {
-        const string Bold = "\x1b[1m";
-        const string Reset = "\x1b[0m";
-
-        Console.WriteLine("\n" + new string('-', 50));
-        Console.WriteLine($"{Bold}Профиль пользователя: {user.Login}{Reset}");
-        Console.WriteLine(new string('-', 50));
-
-        Console.WriteLine($" Имя: {user.Name ?? "Не указано"}");
-        Console.WriteLine($" ID: {user.Id}");
-        Console.WriteLine($" Местоположение: {user.Location ?? "Скрыто"}");
-        Console.WriteLine($" Био: {(string.IsNullOrEmpty(user.Bio) ? "Информация отсутствует" : user.Bio)}");
-        Console.WriteLine($" Публичные репозитории: {user.PublicRepos}");
-        Console.WriteLine($" Подписчики: {user.Followers} | Подписки: {user.Following}");
-        Console.WriteLine($" GitHub URL: {user.HtmlUrl}");
-
-        Console.WriteLine(new string('-', 50));
     }
 }

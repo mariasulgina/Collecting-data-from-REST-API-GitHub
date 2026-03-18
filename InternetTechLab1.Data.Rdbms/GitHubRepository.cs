@@ -24,6 +24,21 @@ public class GitHubRepository : IRelationalDatabaseService
         _gitHubDbContext.AddRanges(followers);
     }
 
+    public void GetApiGitHubUserInformation(GitHubUser user) 
+    {
+        _gitHubDbContext.Get(user);
+    }
+
+    public void GetApiGitHubReposInformation(List<GitHubRepo> repos)
+    {
+        _gitHubDbContext.GetRanges(repos);
+    }
+
+    public void GetApiGitHubFollowersInformation(List<GitHubUser> followers)
+    {
+        _gitHubDbContext.GetRanges(followers);
+    }
+
     private void ShowAll<T>(DbSet<T> dbSet) where T : class //можно добавить логику: если filter не пустой
     {
         var data = dbSet.ToList();

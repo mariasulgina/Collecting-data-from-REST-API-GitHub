@@ -12,15 +12,18 @@ public class MenuService
 
     private readonly IGitHubApiService _gitHabApiService;
     private readonly IGitHubScrapingService _gitHabScrapingService;
+    private readonly IVisualizerService _visualizerService;
 
     private readonly IRelationalDatabaseService _relationalDb;
     private readonly INonRelationalDatabaseService _nonRelationalDb;
 
     public MenuService(IGitHubApiService gitHabApiService, IGitHubScrapingService gitHabScrapingService, 
+    IVisualizerService visualizerService,
     IRelationalDatabaseService relationalDb, INonRelationalDatabaseService nonRelationalDb)
     {
         _gitHabApiService = gitHabApiService;
         _gitHabScrapingService = gitHabScrapingService;
+        _visualizerService = visualizerService;
 
         _relationalDb = relationalDb;
         _nonRelationalDb = nonRelationalDb;
@@ -40,9 +43,9 @@ public class MenuService
 
         _menuToCommandFactory = new Dictionary<(int main, int sub), Func<ICommand>>
         {
-            { (0, 0), () => new GetCurrentUserCommand(_gitHabApiService, _relationalDb) },
-            { (0, 1), () => new GetReposCommand(_gitHabApiService, _relationalDb) },
-            { (0, 2), () => new GetFollowersCommand(_gitHabApiService, _relationalDb) },
+            { (0, 0), () => new GetCurrentUserCommand(_gitHabApiService, _relationalDb, _visualizerService) },
+            { (0, 1), () => new GetReposCommand(_gitHabApiService, _relationalDb, _visualizerService) },
+            { (0, 2), () => new GetFollowersCommand(_gitHabApiService, _relationalDb, _visualizerService) },
             { (0, 3), () => new ShowDbCommand(_relationalDb) },
             { (0, 4), () => new ClearDbCommand(_relationalDb) },
 
