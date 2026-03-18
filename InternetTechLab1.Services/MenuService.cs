@@ -47,7 +47,7 @@ public class MenuService
             { (0, 4), () => new ClearDbCommand(_relationalDb) },
 
             { (1, 0), () => new WebScrapingCommand(_gitHabScrapingService, _nonRelationalDb) },
-            { (1, 1), () => new ShowDbCommand(_nonRelationalDb) },
+            //{ (1, 1), () => new ShowDbCommand(_nonRelationalDb) },
             { (1, 2), () => new ClearDbCommand(_nonRelationalDb) }
         };
     }

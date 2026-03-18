@@ -11,4 +11,6 @@ public interface IRelationalDatabaseService : IDatabaseService
     void SaveApiGitHubUserInformation(GitHubUser user);
     void SaveApiGitHubReposInformation(List<GitHubRepo> repos);
     void SaveApiGitHubFollowersInformation(List<GitHubUser> followers);
+    void ShowAllUsers();
+    void ShowAllRepos();
 }

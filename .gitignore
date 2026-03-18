@@ -23,3 +23,5 @@ bld/
 
 # NuGet Packages
 *.nupkg
+*.db
+*.sqlite

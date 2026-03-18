@@ -18,6 +18,7 @@ public class GetCurrentUserCommand : GetGitHubInformationCommandBase
         if (gitHubUser != null) 
         {
             DbService.SaveApiGitHubUserInformation(gitHubUser); 
+            DbService.ShowAllUsers();
             WatchApiGitHubUserInformation(gitHubUser);
         } 
         else

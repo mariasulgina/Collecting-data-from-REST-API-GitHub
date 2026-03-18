@@ -2,13 +2,15 @@
 
 public class ShowDbCommand : ICommand
 {
-    public ShowDbCommand(IDatabaseService databaseService)
-    {
+    private IRelationalDatabaseService _relationalDatabaseService;
 
+    public ShowDbCommand(IRelationalDatabaseService relationalDatabaseService)
+    {
+        _relationalDatabaseService = relationalDatabaseService;
     }
 
     public async Task Execute() 
     {
-
+        _relationalDatabaseService.ShowAllUsers();
     }
 }
