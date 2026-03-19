@@ -14,6 +14,8 @@ public class ShowDbCommand : ICommand
     public async Task Execute() 
     {
         var users = _relationalDatabaseService.GetAllUsers();
-        _visualizer.ShowDataList(users);
+        _visualizerService.ShowDb(users);
+        var repos = _relationalDatabaseService.GetAllRepos();
+        _visualizerService.ShowDb(repos);
     }
 }

@@ -16,67 +16,77 @@ public class GitHubRepository : IRelationalDatabaseService
 
     public void SaveApiGitHubReposInformation(List<GitHubRepo> repos)
     {
-        _gitHubDbContext.AddRanges(repos);
+        foreach(var repo in repos)
+        {
+            if (repo.Owner != null)
+            {
+                _gitHubDbContext.Add(repo.Owner);
+                repo.OwnerId = repo.Owner.Id;
+                repo.Owner = null;
+            }
+
+            _gitHubDbContext.Add(repo);
+        }
     }
 
     public void SaveApiGitHubFollowersInformation(List<GitHubUser> followers)
     {
-        _gitHubDbContext.AddRanges(followers);
-    }
-
-    public void GetApiGitHubUserInformation(GitHubUser user) 
-    {
-        _gitHubDbContext.Get(user);
-    }
-
-    public void GetApiGitHubReposInformation(List<GitHubRepo> repos)
-    {
-        _gitHubDbContext.GetRanges(repos);
-    }
-
-    public void GetApiGitHubFollowersInformation(List<GitHubUser> followers)
-    {
-        _gitHubDbContext.GetRanges(followers);
-    }
-
-    private void ShowAll<T>(DbSet<T> dbSet) where T : class //можно добавить логику: если filter не пустой
-    {
-        var data = dbSet.ToList();
-
-        if (data.Count == 0) 
+        foreach (var follower in followers)
         {
-            Clear();
-            Console.WriteLine($"В базе данных нет {typeof(T).Name}");
-        } else
-        {
-            Console.WriteLine($"\n     Список: {typeof(T).Name}      ");
-            var properties = typeof(T).GetProperties();
-
-            foreach(var elem in data)
-            {
-                string dataForElem = "";
-                foreach(var properti in properties)
-                {
-                    if (properti.PropertyType == typeof(string) || properti.PropertyType == typeof(int))
-                    {
-                        const string Bold = "\x1b[1m";
-                        const string Reset = "\x1b[0m";
-                        dataForElem += $"{Bold}{properti.Name}{Reset} : {properti.GetValue(elem) ?? "null"} ";
-                    }
-                }
-                Console.WriteLine($"      {dataForElem}       \n");
-                Console.WriteLine(new string('-', 50));
-            }
+            _gitHubDbContext.Add(follower);
         }
     }
 
-    public void ShowAllUsers() 
+    public List<GitHubUser> GetAllUsers() 
     {
-        ShowAll(_gitHubDbContext.Users);
+        return _gitHubDbContext.Users.ToList();
     }
 
-    public void ShowAllRepos() 
+    public List<GitHubRepo> GetAllRepos()
     {
-        ShowAll(_gitHubDbContext.Repos);
+        return _gitHubDbContext.Repos
+            .Include(e => e.Owner)
+            .ToList();
     }
+
+    // private void ShowAll<T>(DbSet<T> dbSet) where T : class //можно добавить логику: если filter не пустой
+    // {
+    //     var data = dbSet.ToList();
+
+    //     if (data.Count == 0) 
+    //     {
+    //         Clear();
+    //         Console.WriteLine($"В базе данных нет {typeof(T).Name}");
+    //     } else
+    //     {
+    //         Console.WriteLine($"\n     Список: {typeof(T).Name}      ");
+    //         var properties = typeof(T).GetProperties();
+
+    //         foreach(var elem in data)
+    //         {
+    //             string dataForElem = "";
+    //             foreach(var properti in properties)
+    //             {
+    //                 if (properti.PropertyType == typeof(string) || properti.PropertyType == typeof(int))
+    //                 {
+    //                     const string Bold = "\x1b[1m";
+    //                     const string Reset = "\x1b[0m";
+    //                     dataForElem += $"{Bold}{properti.Name}{Reset} : {properti.GetValue(elem) ?? "null"} ";
+    //                 }
+    //             }
+    //             Console.WriteLine($"      {dataForElem}       \n");
+    //             Console.WriteLine(new string('-', 50));
+    //         }
+    //     }
+    // }
+
+    // public void ShowAllUsers() 
+    // {
+    //     ShowAll(_gitHubDbContext.Users);
+    // }
+
+    // public void ShowAllRepos() 
+    // {
+    //     ShowAll(_gitHubDbContext.Repos);
+    // }
 }

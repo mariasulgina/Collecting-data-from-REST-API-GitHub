@@ -36,4 +36,6 @@ public class GitHubRepo
 
     [JsonPropertyName("created_at")]
     public DateTime? CreatedAt { get; set; }
+
+    public int? OwnerId { get; set; }
 }

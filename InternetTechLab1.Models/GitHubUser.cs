@@ -44,6 +44,8 @@ public class GitHubUser
 
     [JsonPropertyName("email")]
     public string? Email { get; set; }
+
+    public List<GitHubUser> FollowersList { get; set; } = new();
 }
 
 //https://api.github.com/users/{username}

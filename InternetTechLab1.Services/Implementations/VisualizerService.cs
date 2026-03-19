@@ -52,12 +52,41 @@ public class VisualizerService : IVisualizerService
         {
             Console.WriteLine($"   Репозиторий: {repo.Name}");
             Console.WriteLine($"   URL: {repo.HtmlUrl}");
-            Console.WriteLine($"   Звезды: {repo.StargazersCount,-5} | 🍴 Форки: {repo.ForksCount}");
+            Console.WriteLine($"   Звезды: {repo.StargazersCount,-5} | Форки: {repo.ForksCount}");
             Console.WriteLine($"   Описание: {(string.IsNullOrEmpty(repo.Description) ? "Нет описания" : repo.Description)}");
             Console.WriteLine($"   Язык: {repo.Language ?? "Не определен"}");
             ConsoleStyler.PrintIndentation();
         }
 
         ConsoleStyler.PrintIndentation();
+    }
+
+    public void ShowDb<T>(IEnumerable<T> data) where T : class
+    {
+        var dataList = data.ToList();
+
+        if (dataList.Count == 0) 
+        {
+            Console.WriteLine($"\x1b[31m[Инфо] В базе данных нет записей типа {typeof(T).Name}\x1b[0m");
+        } else
+        {
+            ConsoleStyler.PrintHeader($"Список: {typeof(T).Name}");
+        
+            var properties = typeof(T).GetProperties();
+
+            foreach(var elem in dataList)
+            {
+                string dataForElem = "";
+                foreach(var property in properties)
+                {
+                    if (property.PropertyType == typeof(string) || property.PropertyType == typeof(int))
+                    {
+                        dataForElem += $"{ConsoleStyler.Bold}{property.Name}{ConsoleStyler.Reset}: {property.GetValue(elem) ?? "null"} | ";
+                    }
+                }
+                Console.WriteLine($"  → {dataForElem}");
+                ConsoleStyler.PrintIndentation();
+            }
+        }
     }
 }

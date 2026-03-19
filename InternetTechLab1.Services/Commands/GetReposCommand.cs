@@ -19,7 +19,7 @@ public class GetReposCommand : GetGitHubInformationCommandBase
         if (gitHubRepos != null && gitHubRepos.Count != 0)
         {
             DbService.SaveApiGitHubReposInformation(gitHubRepos);
-            Visualizer.ShowGitHubUser(gitHubRepos);
+            Visualizer.ShowGitHubRepos(gitHubRepos);
         } else
         {
             Console.WriteLine($"У пользователя {username} репозитории не найдены");

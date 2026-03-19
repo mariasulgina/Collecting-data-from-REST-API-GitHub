@@ -8,7 +8,6 @@ public static class ConsoleStyler
     
     public static void PrintHeader(string title)
     {
-        Console.WriteLine("\n" + new string('-', 50));
         Console.WriteLine($"\n{Bold}{Cyan}---- {title.ToUpper()} ----{Reset}");
         Console.WriteLine(new string('-', 50));
     }

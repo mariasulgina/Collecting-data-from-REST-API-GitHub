@@ -23,26 +23,35 @@ public class GitHubDbContext : DbContext
         modelBuilder.Entity<GitHubRepo>()
             .HasOne(e => e.Owner)
             .WithMany()
-            .HasForeignKey("OwnerId")
+            .HasForeignKey(e => e.OwnerId)
             .IsRequired(false);
+
+        modelBuilder.Entity<GitHubUser>()
+            .HasMany(e => e.FollowersList)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("UserFollowers"));
     }
 
-    public void Add<T>(T model) where T : class
+    public void Add<T>(T model) where T : class 
     {
-        var idValue = typeof(T).GetProperty("Id").GetValue(model);
-        if (idValue != null && this.Set<T>().Find(idValue) == null) 
+        var id = typeof(T).GetProperty("Id")?.GetValue(model);
+
+        if (id != null)
         {
-            this.Set<T>().Add(model);
+            var existing = this.Set<T>().Find(id);
+
+            if (existing == null)
+            {
+                this.Set<T>().Add(model);
+            } else
+            {
+                //если объект уже есть в памяти контекста, говорим EF не пытаться вставлять его или его связи снова
+                this.Entry(existing).State = EntityState.Detached; 
+                this.Set<T>().Attach(model);
+                this.Entry(model).State = EntityState.Modified;
+            }
+
             this.SaveChanges();
-        } else
-        {
-            Console.WriteLine($"[DB] Запись {typeof(T).Name} с ID {idValue} уже существует");
         }
-    }
-
-    public void AddRanges<T>(IEnumerable<T> models) where T : class
-    {
-        this.Set<T>().AddRange(models);
-        this.SaveChanges();
     }
 }
