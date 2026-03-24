@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InternetTechLab1.Data.NoSql;
 
-public class NoSqlSettings
+public class NoSqlSettings 
 {
     
 }

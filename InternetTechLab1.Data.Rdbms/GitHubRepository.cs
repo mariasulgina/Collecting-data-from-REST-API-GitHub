@@ -49,44 +49,9 @@ public class GitHubRepository : IRelationalDatabaseService
             .ToList();
     }
 
-    // private void ShowAll<T>(DbSet<T> dbSet) where T : class //можно добавить логику: если filter не пустой
-    // {
-    //     var data = dbSet.ToList();
-
-    //     if (data.Count == 0) 
-    //     {
-    //         Clear();
-    //         Console.WriteLine($"В базе данных нет {typeof(T).Name}");
-    //     } else
-    //     {
-    //         Console.WriteLine($"\n     Список: {typeof(T).Name}      ");
-    //         var properties = typeof(T).GetProperties();
-
-    //         foreach(var elem in data)
-    //         {
-    //             string dataForElem = "";
-    //             foreach(var properti in properties)
-    //             {
-    //                 if (properti.PropertyType == typeof(string) || properti.PropertyType == typeof(int))
-    //                 {
-    //                     const string Bold = "\x1b[1m";
-    //                     const string Reset = "\x1b[0m";
-    //                     dataForElem += $"{Bold}{properti.Name}{Reset} : {properti.GetValue(elem) ?? "null"} ";
-    //                 }
-    //             }
-    //             Console.WriteLine($"      {dataForElem}       \n");
-    //             Console.WriteLine(new string('-', 50));
-    //         }
-    //     }
-    // }
-
-    // public void ShowAllUsers() 
-    // {
-    //     ShowAll(_gitHubDbContext.Users);
-    // }
-
-    // public void ShowAllRepos() 
-    // {
-    //     ShowAll(_gitHubDbContext.Repos);
-    // }
+    public async Task ClearDataBase()
+    {
+        await _gitHubDbContext.Repos.ExecuteDeleteAsync();
+        await _gitHubDbContext.Users.ExecuteDeleteAsync();
+    }
 }

@@ -7,13 +7,30 @@ namespace InternetTechLab1.Services;
 
 public class WebScrapingCommand : ICommand
 {
-    public WebScrapingCommand(IGitHubScrapingService gitHubScrapingService, INonRelationalDatabaseService nonRelationalDatabaseService)
+    protected readonly IGitHubScrapingService ScrapingService;
+    protected readonly INonRelationalDatabaseService DbService;
+    protected readonly IVisualizerService Visualizer;
+
+    public WebScrapingCommand(IGitHubScrapingService gitHubScrapingService, INonRelationalDatabaseService nonRelationalDatabaseService, IVisualizerService visualizer)
     {
+        ScrapingService = gitHubScrapingService;
+        DbService = nonRelationalDatabaseService;
+        Visualizer = visualizer;
 
     }
 
     public async Task Execute() 
     {
-        
+        Console.Write("Введите URL: ");
+        string? urlname = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(urlname))
+        {
+            Console.WriteLine("URL не может быть пустым");
+        } else
+        {
+            var URLWebScrapingInformation = await ScrapingService.GetFromURLWebScrapingInformation(urlname);
+            Console.WriteLine(URLWebScrapingInformation);
+        }
     }
 }

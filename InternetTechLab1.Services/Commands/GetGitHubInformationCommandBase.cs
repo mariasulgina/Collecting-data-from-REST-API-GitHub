@@ -26,10 +26,10 @@ public abstract class GetGitHubInformationCommandBase : ICommand
         if (string.IsNullOrWhiteSpace(username))
         {
             Console.WriteLine("Имя пользователя не может быть пустым");
-            return;
+        } else
+        {
+            await ExecuteGitHubLogic(username);
         }
-
-        await ExecuteGitHubLogic(username);
     }
 
     protected abstract Task ExecuteGitHubLogic(string username);
