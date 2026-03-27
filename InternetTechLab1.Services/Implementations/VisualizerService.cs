@@ -89,4 +89,12 @@ public class VisualizerService : IVisualizerService
             }
         }
     }
+
+    public void ShowScrapeResults(IEnumerable<ScrapedItem> results)
+    {
+        foreach(var elem in results)
+        {
+            Console.WriteLine(elem);
+        }
+    }
 }
