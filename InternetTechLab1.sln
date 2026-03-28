@@ -7,11 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1", "Interne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Models", "InternetTechLab1.Models\InternetTechLab1.Models.csproj", "{C079E3EB-EDFF-40CD-81C3-9424377B5705}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Data.Rdbms", "InternetTechLab1.Data.Rdbms\InternetTechLab1.Data.Rdbms.csproj", "{9A0B3D3D-5929-4DD2-8ED4-1BADFA0BECA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Data", "InternetTechLab1.Data\InternetTechLab1.Data.csproj", "{9A0B3D3D-5929-4DD2-8ED4-1BADFA0BECA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Data.NoSql", "InternetTechLab1.Data.NoSql\InternetTechLab1.Data.NoSql.csproj", "{0C0CB52C-C8D5-4E03-B9DD-EBD496585E2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Service", "InternetTechLab1.Service\InternetTechLab1.Service.csproj", "{0C0CB52C-C8D5-4E03-B9DD-EBD496585E2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Helpers", "InternetTechLab1.Helpers\InternetTechLab1.Helpers.csproj", "{D9F60EAD-4D02-49F1-816C-F2DC130198F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Presentation", "InternetTechLab1.Presentation\InternetTechLab1.Presentation.csproj", "{D9F60EAD-4D02-49F1-816C-F2DC130198F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

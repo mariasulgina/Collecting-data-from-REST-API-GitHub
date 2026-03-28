@@ -5,4 +5,11 @@ using System.Threading.Tasks;
 
 namespace InternetTechLab1.Models;
 
-public record ScrapedItem(string Title, string Content);
+public record ScrapedItem(
+    string Url,
+    string DataType,
+    string Value
+)
+{
+    public ScrapedItem() : this(string.Empty, "Unknown", string.Empty) { }
+}

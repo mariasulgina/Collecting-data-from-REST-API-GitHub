@@ -2,10 +2,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InternetTechLab1.Services\InternetTechLab1.Services.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Data.NoSql\InternetTechLab1.Data.NoSql.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Data.Rdbms\InternetTechLab1.Data.Rdbms.csproj" />
+    <ProjectReference Include="..\InternetTechLab1.Data\InternetTechLab1.Data.csproj" />
     <ProjectReference Include="..\InternetTechLab1.Models\InternetTechLab1.Models.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Helpers\InternetTechLab1.Helpers.csproj" />
+    <ProjectReference Include="..\InternetTechLab1.Presentation\InternetTechLab1.Presentation.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,18 +1,34 @@
 ﻿using InternetTechLab1.Services;
-using InternetTechLab1.Data.NoSql;
-using InternetTechLab1.Data.Rdbms;
+using InternetTechLab1.Data;
+using InternetTechLab1.UI;
+using InternetTechLab1.Commands;
 
 namespace InternetTechLab1;
+
 class Program 
 {
     public static async Task Main(string[] args) {
-        GitHubApiService gitHubApiService = new();
-        GitHubScrapingService gitHubScrapingService = new();
-        GitHubRepository gitHubRepository = new();
-        ScrapingRepository scrapingRepository = new();
+        //1 слой
+        GitHubApiService api = new();
+        GitHubRepository gitHubDb = new();
+        ScrapingRepository scrapingDb = new();
+
+        //2 слой
+        GitHubService gitHubService = new GitHubService(api, gitHubDb);
+        ScrapingService scrapingService = new ScrapingService(scrapingDb);
+
+        //3 слой
         VisualizerService visualizerService = new();
 
-        MenuService menu = new MenuService(gitHubApiService, gitHubScrapingService, visualizerService, gitHubRepository, scrapingRepository);
+        CommandFactory factory = new CommandFactory(
+            gitHubService, 
+            scrapingService, 
+            visualizerService, 
+            gitHubDb, 
+            scrapingDb
+        );
+
+        MenuService menu = new MenuService(factory);
         await menu.Run();
     }
 }

@@ -1,0 +1,18 @@
+﻿using InternetTechLab1.Models;
+
+namespace InternetTechLab1.Data;
+
+public class ScrapingRepository : INonRelationalDatabaseService
+{
+    private readonly NoSqlSettings _noSqlSettings = new();
+    
+    public async Task ClearDataBase()
+    {
+        
+    }
+
+    public void SaveScrapeResults(IEnumerable<ScrapedItem> results)
+    {
+
+    }
+}

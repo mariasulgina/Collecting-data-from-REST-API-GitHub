@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\InternetTechLab1.Services\InternetTechLab1.Services.csproj" />
     <ProjectReference Include="..\InternetTechLab1.Models\InternetTechLab1.Models.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Data\InternetTechLab1.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.4.0" />
   </ItemGroup>
 
   <PropertyGroup>
