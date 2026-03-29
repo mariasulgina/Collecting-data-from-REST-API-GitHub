@@ -4,5 +4,6 @@ namespace InternetTechLab1.Data;
 
 public interface INonRelationalDatabaseService : IDatabaseService
 {
-    void SaveScrapeResults(IEnumerable<ScrapedItem> results);
+    Task SaveScrapeResults(IEnumerable<ScrapedItem> results);
+    Task<IEnumerable<ScrapedItem>> GetAllWebScrapResults();
 }

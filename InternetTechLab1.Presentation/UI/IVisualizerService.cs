@@ -13,4 +13,5 @@ public interface IVisualizerService
     void ShowGitHubRepos(List<GitHubRepo> gitHubRepos);
     void ShowDb<T>(IEnumerable<T> data) where T : class;
     void ShowScrapeResults(IEnumerable<ScrapedItem> results);
+    void ShowNoSqlDb(IEnumerable<ScrapedItem> results);
 }

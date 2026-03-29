@@ -44,7 +44,7 @@ public class ScrapingService : IScrapingService
         IHtmlDocument document = await parser.ParseDocumentAsync(htmlContent);
 
         IEnumerable<ScrapedItem> results = GetScrapeResults(document);
-        _database.SaveScrapeResults(results);
+        await _database.SaveScrapeResults(results);
 
         return results;
     }

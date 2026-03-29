@@ -93,7 +93,7 @@ public class VisualizerService : IVisualizerService
         {
             Console.WriteLine("Результаты скрапинга отсутствуют");
             return;
-        }
+        } 
 
         string firstUrl = results.First().Url;
         ConsoleStyler.PrintHeader($"Результаты для: {firstUrl}");
@@ -108,5 +108,10 @@ public class VisualizerService : IVisualizerService
             }
             ConsoleStyler.PrintIndentation();
         }
+    }
+
+    public void ShowNoSqlDb(IEnumerable<ScrapedItem> results)
+    {
+        ShowScrapeResults(results);
     }
 }

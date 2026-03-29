@@ -42,6 +42,7 @@ public class CommandFactory
             (0, 4) => new ClearDbCommand(_relDb),
 
             (1, 0) => new WebScrapingCommand(_scrapingService, _visualizer),
+            (1, 1) => new ShowNoSqlDbCommand(_nonRelDb, _visualizer),
             (1, 2) => new ClearDbCommand(_nonRelDb),
             _ => null
         };
