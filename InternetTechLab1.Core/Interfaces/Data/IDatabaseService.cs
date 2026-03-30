@@ -1,4 +1,4 @@
-namespace InternetTechLab1.Data;
+namespace InternetTechLab1.Core.Interfaces;
 
 public interface IDatabaseService
 {

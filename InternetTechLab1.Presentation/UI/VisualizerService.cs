@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using InternetTechLab1.Models;
 using static System.Console;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.UI;
 
@@ -64,7 +65,7 @@ public class VisualizerService : IVisualizerService
 
         if (dataList.Count == 0) 
         {
-            Console.WriteLine($"\x1b[31mВ базе данных нет записей типа {typeof(T).Name}\x1b[0m");
+            Console.WriteLine($"В базе данных нет записей типа {typeof(T).Name}");
         } else
         {
             ConsoleStyler.PrintHeader($"Список: {typeof(T).Name}");

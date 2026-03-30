@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\InternetTechLab1.Models\InternetTechLab1.Models.csproj" />
-    <ProjectReference Include="..\InternetTechLab1.Data\InternetTechLab1.Data.csproj" />
+    <ProjectReference Include="..\InternetTechLab1.Core\InternetTechLab1.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

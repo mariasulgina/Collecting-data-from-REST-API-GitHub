@@ -1,6 +1,6 @@
 using InternetTechLab1.Models;
 
-namespace InternetTechLab1.Data;
+namespace InternetTechLab1.Core.Interfaces;
 
 public interface INonRelationalDatabaseService : IDatabaseService
 {

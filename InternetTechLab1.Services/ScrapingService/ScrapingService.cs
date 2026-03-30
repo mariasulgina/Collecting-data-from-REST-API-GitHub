@@ -1,27 +1,25 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AngleSharp;
-using System.Linq;
-using AngleSharp.Html.Parser;
 using System.Net.Http;
-using System.Net.Http.Json;
-using AngleSharp.Html.Dom;
 using System.Threading;
+using System.Threading.Tasks;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using InternetTechLab1.Models;
-using AngleSharp.Dom;
-using InternetTechLab1.Data;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Services;
 
 public class ScrapingService : IScrapingService
 {
     private readonly INonRelationalDatabaseService _database;
-    private const int _defaultTimeoutSeconds = 50;
-    private static HttpClient _httpClient = new HttpClient();
+    private readonly ILoggerService _logger;
 
-    public ScrapingService(INonRelationalDatabaseService database)
+    private static readonly int _defaultTimeoutSeconds = 50;
+    private static readonly HttpClient _httpClient = new HttpClient();
+
+    public ScrapingService(INonRelationalDatabaseService database, ILoggerService logger)
     {
         _database = database;
+        _logger = logger;
 
         if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
         {
@@ -32,21 +30,33 @@ public class ScrapingService : IScrapingService
 
     public async Task<IEnumerable<ScrapedItem>?> GetFromURLWebScrapingInformation(string url)
     {
-        CancellationTokenSource cancellationToken = new CancellationTokenSource();
+        try 
+        {
+            CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
-        HttpResponseMessage urlWebScrapingInformation = await _httpClient.GetAsync(url);
-        cancellationToken.Token.ThrowIfCancellationRequested();
+            HttpResponseMessage urlWebScrapingInformation = await _httpClient.GetAsync(url);
+            cancellationToken.Token.ThrowIfCancellationRequested();
 
-        string htmlContent = await urlWebScrapingInformation.Content.ReadAsStringAsync();
-        cancellationToken.Token.ThrowIfCancellationRequested();
+            string htmlContent = await urlWebScrapingInformation.Content.ReadAsStringAsync();
+            await _logger.WriteLogToFile($"[Service] HTML получен (размер: {htmlContent.Length} символов)");
+            cancellationToken.Token.ThrowIfCancellationRequested();
 
-        HtmlParser parser = new HtmlParser();
-        IHtmlDocument document = await parser.ParseDocumentAsync(htmlContent);
+            HtmlParser parser = new HtmlParser();
+            IHtmlDocument document = await parser.ParseDocumentAsync(htmlContent);
 
-        IEnumerable<ScrapedItem> results = GetScrapeResults(document);
-        await _database.SaveScrapeResults(results);
+            IEnumerable<ScrapedItem> results = GetScrapeResults(document);
+            await _logger.WriteLogToFile($"[Service] Парсинг завершен. Найдено элементов: {results.Count()}");
 
-        return results;
+            await _database.SaveScrapeResults(results);
+            await _logger.WriteLogToFile("[Service] Данные успешно сохранены в репозиторий");
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+            await _logger.WriteLogToFile($"[Error] Ошибка в ScrapingService: {ex.Message}");
+            throw;
+        }
     }
 
     private IEnumerable<ScrapedItem> GetScrapeResults(IHtmlDocument document)

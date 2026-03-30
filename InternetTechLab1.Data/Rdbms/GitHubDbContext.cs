@@ -32,18 +32,19 @@ public class GitHubDbContext : DbContext
             .UsingEntity(j => j.ToTable("UserFollowers"));
     }
 
-    public void Add<T>(T model) where T : class 
+    public async Task AddAsync<T>(T model) where T : class 
     {
         var id = typeof(T).GetProperty("Id")?.GetValue(model);
 
         if (id != null)
         {
-            var existing = this.Set<T>().Find(id);
+            var existing = await this.Set<T>().FindAsync(id);
 
             if (existing == null)
             {
-                this.Set<T>().Add(model);
-            } else
+                await this.Set<T>().AddAsync(model);
+            } 
+            else
             {
                 //если объект уже есть в памяти контекста, говорим EF не пытаться вставлять его или его связи снова
                 this.Entry(existing).State = EntityState.Detached; 
@@ -51,7 +52,7 @@ public class GitHubDbContext : DbContext
                 this.Entry(model).State = EntityState.Modified;
             }
 
-            this.SaveChanges();
+            await this.SaveChangesAsync();
         }
     }
 }

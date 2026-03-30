@@ -1,24 +1,23 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
 using InternetTechLab1.Models;
-using InternetTechLab1.Services;
 using InternetTechLab1.UI;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
 public class GetCurrentUserCommand : GetGitHubInformationCommandBase
 {
     public GetCurrentUserCommand(IGitHubService gitHubService, 
-    IVisualizerService visualizerService)
-    : base(gitHubService, visualizerService) { }
+    IVisualizerService visualizerService, ILoggerService logger)
+    : base(gitHubService, visualizerService, logger) { }
 
     protected override async Task ExecuteGitHubLogic(string username)
     {
-        GitHubUser? gitHubUser = await Service.GetAndSaveUserAsync(username);
+        GitHubUser? gitHubUser = await _service.GetAndSaveUserAsync(username);
 
         if (gitHubUser != null) 
         {
-            Visualizer.ShowGitHubUser(gitHubUser);
+            _visualizer.ShowGitHubUser(gitHubUser);
         } 
         else
         {

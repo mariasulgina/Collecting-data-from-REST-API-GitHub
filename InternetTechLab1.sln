@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Service", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Presentation", "InternetTechLab1.Presentation\InternetTechLab1.Presentation.csproj", "{D9F60EAD-4D02-49F1-816C-F2DC130198F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetTechLab1.Core", "InternetTechLab1.Core\InternetTechLab1.Core.csproj", "{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{D9F60EAD-4D02-49F1-816C-F2DC130198F3}.Release|x64.Build.0 = Release|Any CPU
 		{D9F60EAD-4D02-49F1-816C-F2DC130198F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{D9F60EAD-4D02-49F1-816C-F2DC130198F3}.Release|x86.Build.0 = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|x64.Build.0 = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Debug|x86.Build.0 = Debug|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|x64.ActiveCfg = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|x64.Build.0 = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|x86.ActiveCfg = Release|Any CPU
+		{824BB462-EE5D-461E-B7B1-C43C8B5C1B19}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿namespace InternetTechLab1.Commands;
+﻿namespace InternetTechLab1.Core.Interfaces;
 
 public interface ICommand
 {

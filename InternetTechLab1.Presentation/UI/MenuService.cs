@@ -1,7 +1,6 @@
-﻿using System;
-using static System.Console;
-using System.Collections.Generic;
+﻿using static System.Console;
 using InternetTechLab1.Commands;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.UI;
 
@@ -10,10 +9,12 @@ public class MenuService
     private readonly List<string> _mainMenu;
     private readonly List<string>[] _subMenus;
     private readonly CommandFactory _commandFactory;
+    private readonly ILoggerService _logger;
 
-    public MenuService(CommandFactory commandFactory)
+    public MenuService(CommandFactory commandFactory, ILoggerService logger)
     {
         _commandFactory = commandFactory;
+        _logger = logger;
 
         _mainMenu = new List<string> 
         { 
@@ -31,32 +32,53 @@ public class MenuService
 
     public async Task Run() 
     {
-        while (true) 
+        await _logger.WriteLogToFile("[System] Приложение запущено. Главное меню");
+        bool isRunning = true;
+
+        while (isRunning) 
         {
             Clear();
             int mainChoice = ShowMenu(_mainMenu);
-            if (mainChoice == _mainMenu.Count - 1) return;
 
-            while (true) 
+            if (mainChoice == _mainMenu.Count - 1) 
             {
-                Clear();
-                int subChoice = ShowMenu(_subMenus[mainChoice]);
+                await _logger.WriteLogToFile("[System] Пользователь выбрал 'Выход'. Завершение работы");
+                isRunning = false;
+            }
+            else
+            {
+                await _logger.WriteLogToFile($"[UI] Переход в подменю: {_mainMenu[mainChoice]}");
 
-                if (subChoice == _subMenus[mainChoice].Count - 1) break;
-
-                var command = _commandFactory.CreateCommand(mainChoice, subChoice);
-                
-                if (command != null)
+                while (true) 
                 {
                     Clear();
-                    await command.Execute();
-                    WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню...");
-                    ReadKey();
-                } 
-                else 
-                {
-                    WriteLine("\nКоманда в разработке... Нажмите клавишу.");
-                    ReadKey();
+                    int subChoice = ShowMenu(_subMenus[mainChoice]);
+
+                    if (subChoice == _subMenus[mainChoice].Count - 1) 
+                    {
+                        await _logger.WriteLogToFile("[UI] Возврат в главное меню.");
+                        break;
+                    }
+
+                    var command = _commandFactory.CreateCommand(mainChoice, subChoice);
+                    
+                    if (command != null)
+                    {
+                        Clear();
+
+                        await _logger.WriteLogToFile($"[UI] Выбрана команда: {_subMenus[mainChoice][subChoice]}");
+
+                        await command.Execute();
+
+                        WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню...");
+                        ReadKey();
+                    } 
+                    else 
+                    {
+                        await _logger.WriteLogToFile($"[Warning] Команда для выбора [{mainChoice}, {subChoice}] не найдена в Factory");
+                        WriteLine("\nКоманда в разработке... Нажмите клавишу.");
+                        ReadKey();
+                    }
                 }
             }
         }
@@ -82,17 +104,18 @@ public class MenuService
             Console.Write($"-> {stringItems[currentPosition]}");
             cki = Console.ReadKey();
 
-            switch(cki.Key)
+            if (cki.Key == ConsoleKey.UpArrow)
             {
-                case ConsoleKey.UpArrow:
-                    currentPosition = Math.Max(currentPosition - 1, 0);
-                    break;
-                case ConsoleKey.DownArrow:
-                    currentPosition = Math.Min(currentPosition + 1, stringItems.Count - 1); 
-                    break;
-                case ConsoleKey.Enter:
-                    Console.WriteLine($"Выбрано: {stringItems[currentPosition]}");
-                    return currentPosition;
+                currentPosition = Math.Max(currentPosition - 1, 0);
+            }
+            else if (cki.Key == ConsoleKey.DownArrow)
+            {
+                currentPosition = Math.Min(currentPosition + 1, stringItems.Count - 1);
+            }
+            else if (cki.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine($"\nВыбрано: {stringItems[currentPosition]}");
+                return currentPosition;
             }
         } while (true);
     }

@@ -8,14 +8,16 @@ namespace InternetTechLab1;
 class Program 
 {
     public static async Task Main(string[] args) {
+        FileLogger loggerService = new FileLogger();
+
         //1 слой
-        GitHubApiService api = new();
-        GitHubRepository gitHubDb = new();
-        ScrapingRepository scrapingDb = new();
+        GitHubApiService api = new GitHubApiService(loggerService);
+        GitHubRepository gitHubDb = new GitHubRepository(loggerService);
+        ScrapingRepository scrapingDb = new ScrapingRepository(loggerService);
 
         //2 слой
-        GitHubService gitHubService = new GitHubService(api, gitHubDb);
-        ScrapingService scrapingService = new ScrapingService(scrapingDb);
+        GitHubService gitHubService = new GitHubService(api, gitHubDb, loggerService);
+        ScrapingService scrapingService = new ScrapingService(scrapingDb, loggerService);
 
         //3 слой
         VisualizerService visualizerService = new();
@@ -25,10 +27,11 @@ class Program
             scrapingService, 
             visualizerService, 
             gitHubDb, 
-            scrapingDb
+            scrapingDb,
+            loggerService
         );
 
-        MenuService menu = new MenuService(factory);
+        MenuService menu = new MenuService(factory, loggerService);
         await menu.Run();
     }
 }

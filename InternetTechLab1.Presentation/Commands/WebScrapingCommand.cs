@@ -1,20 +1,21 @@
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using InternetTechLab1.Models;
-using InternetTechLab1.Services;
 using InternetTechLab1.UI;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
 public class WebScrapingCommand : ICommand
 {
-    protected readonly IScrapingService ScrapingService;
-    protected readonly IVisualizerService Visualizer;
+    protected readonly IScrapingService _scrapingService;
+    protected readonly IVisualizerService _visualizer;
+    protected readonly ILoggerService _logger;
 
-    public WebScrapingCommand(IScrapingService scrapingService, IVisualizerService visualizer)
+    public WebScrapingCommand(IScrapingService scrapingService, IVisualizerService visualizer, ILoggerService logger)
     {
-        ScrapingService = scrapingService;
-        Visualizer = visualizer;
+        _scrapingService = scrapingService;
+        _visualizer = visualizer;
+        _logger = logger;
     }
 
     public async Task Execute() 
@@ -24,16 +25,23 @@ public class WebScrapingCommand : ICommand
 
         if (string.IsNullOrWhiteSpace(urlname))
         {
+            await _logger.WriteLogToFile("[UI] Попытка скрапинга с пустым URL");
             Console.WriteLine("URL не может быть пустым");
-        } else
+        } 
+        else
         {
-            IEnumerable<ScrapedItem>? results = await ScrapingService.GetFromURLWebScrapingInformation(urlname);
+            await _logger.WriteLogToFile($"[UI] Запущена команда WebScraping для URL: {urlname}");
+
+            IEnumerable<ScrapedItem>? results = await _scrapingService.GetFromURLWebScrapingInformation(urlname);
 
             if (results != null)
             {
-                Visualizer.ShowScrapeResults(results);
-            } else
+                _visualizer.ShowScrapeResults(results);
+                await _logger.WriteLogToFile($"[UI] Результаты для {urlname} успешно отображены пользователю");
+            } 
+            else
             {
+                await _logger.WriteLogToFile($"[UI] Скрапинг {urlname} завершился без результатов");
                 Console.WriteLine("Ничего не удалось найти по данному адресу");
             }
         }

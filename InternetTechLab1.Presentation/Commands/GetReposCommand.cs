@@ -1,26 +1,29 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
 using InternetTechLab1.Models;
-using InternetTechLab1.Services;
 using InternetTechLab1.UI;
+using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
 public class GetReposCommand : GetGitHubInformationCommandBase
 {
     public GetReposCommand(IGitHubService gitHubService, 
-    IVisualizerService visualizerService)
-    : base(gitHubService, visualizerService) { }
+    IVisualizerService visualizerService, ILoggerService logger)
+    : base(gitHubService, visualizerService, logger) { }
 
     protected override async Task ExecuteGitHubLogic(string username)
     {
-        List<GitHubRepo>? gitHubRepos = await Service.GetAndSaveReposAsync(username);
+        await _logger.WriteLogToFile($"[UI] Запрос списка репозиториев для пользователя: {username}");
+
+        List<GitHubRepo>? gitHubRepos = await _service.GetAndSaveReposAsync(username);
 
         if (gitHubRepos != null && gitHubRepos.Count != 0)
         {
-            Visualizer.ShowGitHubRepos(gitHubRepos);
+            await _logger.WriteLogToFile($"[UI] Успешно получено {gitHubRepos.Count} репозиториев для {username} и отправлены на визуализацию");
+            _visualizer.ShowGitHubRepos(gitHubRepos);
         } else
         {
+            await _logger.WriteLogToFile($"[UI] Репозитории для {username} не найдены или API вернул пустой список");
             Console.WriteLine($"У пользователя {username} репозитории не найдены");
         }
     }

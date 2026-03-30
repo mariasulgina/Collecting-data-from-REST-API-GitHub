@@ -1,6 +1,6 @@
 using InternetTechLab1.Models;
 
-namespace InternetTechLab1.Services;
+namespace InternetTechLab1.Core.Interfaces;
 
 public interface IScrapingService
 {
