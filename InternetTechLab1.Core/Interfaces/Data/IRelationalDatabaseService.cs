@@ -1,4 +1,4 @@
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 
 namespace InternetTechLab1.Core.Interfaces;
 
@@ -9,4 +9,6 @@ public interface IRelationalDatabaseService : IDatabaseService
     Task SaveApiGitHubFollowersInformation(List<GitHubUser> followers);
     Task<List<GitHubRepo>> GetAllRepos();
     Task<List<GitHubUser>> GetAllUsers();
+    Task<GitHubUser?> GetUserByLoginAsync(string username);
+    Task<List<GitHubRepo>?> GetReposByLoginUserAsync(string username);
 }

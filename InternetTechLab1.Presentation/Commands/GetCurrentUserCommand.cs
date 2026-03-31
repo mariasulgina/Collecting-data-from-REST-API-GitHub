@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -17,10 +17,14 @@ public class GetCurrentUserCommand : GetGitHubInformationCommandBase
 
         if (gitHubUser != null) 
         {
+            await _logger.WriteLogToFile($"[UI] Данные пользователя {username} (ID: {gitHubUser.Id}) успешно получены и отправлены на визуализацию");
+
             _visualizer.ShowGitHubUser(gitHubUser);
         } 
         else
         {
+            await _logger.WriteLogToFile($"[UI] Предупреждение: Пользователь {username} не найден в GitHub API");
+            
             Console.WriteLine($"Пользователь {username} не найден");
         }
     }

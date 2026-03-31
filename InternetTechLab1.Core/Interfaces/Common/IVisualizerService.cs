@@ -1,4 +1,4 @@
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 
 namespace InternetTechLab1.Core.Interfaces;
 
@@ -10,4 +10,5 @@ public interface IVisualizerService
     void ShowDb<T>(IEnumerable<T> data) where T : class;
     void ShowScrapeResults(IEnumerable<ScrapedItem> results);
     void ShowNoSqlDb(IEnumerable<ScrapedItem> results);
+    void ShowGitHubUserAndHisRepos(GitHubUser user, List<GitHubRepo> repos);
 }

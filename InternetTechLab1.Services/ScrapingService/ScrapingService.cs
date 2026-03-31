@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Services;
@@ -32,14 +32,16 @@ public class ScrapingService : IScrapingService
     {
         try 
         {
-            CancellationTokenSource cancellationToken = new CancellationTokenSource();
+            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+            {
+                throw new ArgumentException("Введен некорректный формат URL. Не забудьте http:// или https://");
+            }
 
-            HttpResponseMessage urlWebScrapingInformation = await _httpClient.GetAsync(url);
-            cancellationToken.Token.ThrowIfCancellationRequested();
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
-            string htmlContent = await urlWebScrapingInformation.Content.ReadAsStringAsync();
+            string htmlContent = await response.Content.ReadAsStringAsync();
             await _logger.WriteLogToFile($"[Service] HTML получен (размер: {htmlContent.Length} символов)");
-            cancellationToken.Token.ThrowIfCancellationRequested();
 
             HtmlParser parser = new HtmlParser();
             IHtmlDocument document = await parser.ParseDocumentAsync(htmlContent);
@@ -52,10 +54,22 @@ public class ScrapingService : IScrapingService
 
             return results;
         }
+        catch (HttpRequestException ex) when (ex.Message.Contains("404"))
+        {
+            throw new Exception("Сайт ответил ошибкой 404: Страница не найдена");
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is System.Net.Sockets.SocketException)
+        {
+            throw new Exception("Ошибка сети: Проверьте интернет-соединение или доступность сайта");
+        }
+        catch (TaskCanceledException)
+        {
+            throw new Exception($"Превышено время ожидания ({_defaultTimeoutSeconds} сек). Сайт слишком долго не отвечает");
+        }
         catch (Exception ex)
         {
             await _logger.WriteLogToFile($"[Error] Ошибка в ScrapingService: {ex.Message}");
-            throw;
+            throw; 
         }
     }
 

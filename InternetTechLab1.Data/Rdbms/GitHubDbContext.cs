@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using InternetTechLab1.Models;
+using InternetTechLab1.Data.Models;
 
 namespace InternetTechLab1.Data;
 
 public class GitHubDbContext : DbContext
 {
-    public DbSet<GitHubRepo> Repos { get; set; }
-    public DbSet<GitHubUser> Users { get; set; }
+    public DbSet<GitHubRepoEntity> Repos { get; set; }
+    public DbSet<GitHubUserEntity> Users { get; set; }
 
     public GitHubDbContext()
     {
@@ -20,13 +20,13 @@ public class GitHubDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<GitHubRepo>()
+        modelBuilder.Entity<GitHubRepoEntity>()
             .HasOne(e => e.Owner)
             .WithMany()
             .HasForeignKey(e => e.OwnerId)
             .IsRequired(false);
 
-        modelBuilder.Entity<GitHubUser>()
+        modelBuilder.Entity<GitHubUserEntity>()
             .HasMany(e => e.FollowersList)
             .WithMany()
             .UsingEntity(j => j.ToTable("UserFollowers"));

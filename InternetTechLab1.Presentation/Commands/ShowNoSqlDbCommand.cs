@@ -26,9 +26,12 @@ public class ShowNoSqlDbCommand : ICommand
 
             await _logger.WriteLogToFile($"[UI] Из базы извлечено {webScrapResults?.Count() ?? 0} записей скрапинга");
 
-            _visualizerService.ShowNoSqlDb(webScrapResults);
+            if (webScrapResults != null)
+            {
+                _visualizerService.ShowNoSqlDb(webScrapResults);
 
-            await _logger.WriteLogToFile($"[UI] Результаты скрапинга успешно отображены пользователю");
+                await _logger.WriteLogToFile($"[UI] Результаты скрапинга успешно отображены пользователю");
+            }
         }
         catch (Exception ex)
         {

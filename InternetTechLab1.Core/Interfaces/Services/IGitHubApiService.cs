@@ -1,6 +1,4 @@
-﻿using InternetTechLab1.Models;
-
-namespace InternetTechLab1.Core.Interfaces;
+﻿namespace InternetTechLab1.Core.Interfaces;
 
 public interface IGitHubApiService
 {

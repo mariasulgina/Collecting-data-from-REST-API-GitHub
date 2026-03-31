@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -30,19 +30,37 @@ public class WebScrapingCommand : ICommand
         } 
         else
         {
-            await _logger.WriteLogToFile($"[UI] Запущена команда WebScraping для URL: {urlname}");
-
-            IEnumerable<ScrapedItem>? results = await _scrapingService.GetFromURLWebScrapingInformation(urlname);
-
-            if (results != null)
+            try 
             {
-                _visualizer.ShowScrapeResults(results);
-                await _logger.WriteLogToFile($"[UI] Результаты для {urlname} успешно отображены пользователю");
-            } 
-            else
+                await _logger.WriteLogToFile($"[UI] Запущена команда WebScraping для URL: {urlname}");
+
+                IEnumerable<ScrapedItem>? results = await _scrapingService.GetFromURLWebScrapingInformation(urlname);
+
+                if (results != null)
+                {
+                    _visualizer.ShowScrapeResults(results);
+                    await _logger.WriteLogToFile($"[UI] Результаты для {urlname} успешно отображены пользователю");
+                } 
+                else
+                {
+                    await _logger.WriteLogToFile($"[UI] Скрапинг {urlname} завершился без результатов");
+                    Console.WriteLine("Ничего не удалось найти по данному адресу");
+                }
+            }
+            catch (ArgumentException ex)
             {
-                await _logger.WriteLogToFile($"[UI] Скрапинг {urlname} завершился без результатов");
-                Console.WriteLine("Ничего не удалось найти по данному адресу");
+                await _logger.WriteLogToFile($"[UI Error] {ex.Message}");
+                Console.WriteLine(ex.Message);
+            }
+            catch (HttpRequestException ex)
+            {
+                await _logger.WriteLogToFile($"[Network Error] {urlname}: {ex.Message}");
+                Console.WriteLine($"Ошибка сети: Не удалось открыть сайт. Проверьте подключение.");
+            }
+            catch (Exception ex)
+            {
+                await _logger.WriteLogToFile($"[Critical Error] {ex.Message}");
+                Console.WriteLine($"Ошибка: {ex.Message}"); 
             }
         }
     }

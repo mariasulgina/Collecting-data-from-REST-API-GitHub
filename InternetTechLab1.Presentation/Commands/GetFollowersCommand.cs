@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -20,11 +20,13 @@ public class GetFollowersCommand : GetGitHubInformationCommandBase
         if (followers != null && followers.Count > 0)
         {
             await _logger.WriteLogToFile($"[UI] Успешно получено {followers.Count} подписчиков для {username} и отправлены на визуализацию");
+
             _visualizer.ShowGitHubFollowers(followers, username);
         }
         else
         {
             await _logger.WriteLogToFile($"[UI] У пользователя {username} список подписчиков пуст или скрыт настройками приватности");
+            
             Console.WriteLine($"У пользователя {username} нет подписчиков или они скрыты");
         }
     }

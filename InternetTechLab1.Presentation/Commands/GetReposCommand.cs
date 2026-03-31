@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -20,10 +20,12 @@ public class GetReposCommand : GetGitHubInformationCommandBase
         if (gitHubRepos != null && gitHubRepos.Count != 0)
         {
             await _logger.WriteLogToFile($"[UI] Успешно получено {gitHubRepos.Count} репозиториев для {username} и отправлены на визуализацию");
+            
             _visualizer.ShowGitHubRepos(gitHubRepos);
         } else
         {
             await _logger.WriteLogToFile($"[UI] Репозитории для {username} не найдены или API вернул пустой список");
+
             Console.WriteLine($"У пользователя {username} репозитории не найдены");
         }
     }

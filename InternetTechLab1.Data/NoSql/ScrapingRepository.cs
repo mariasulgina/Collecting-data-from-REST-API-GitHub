@@ -1,4 +1,5 @@
-﻿using InternetTechLab1.Models;
+﻿using InternetTechLab1.Data.Models;
+using InternetTechLab1.Core.Models;
 using System.Text.Json;
 using System.IO;
 using InternetTechLab1.Core.Interfaces;
@@ -26,12 +27,12 @@ public class ScrapingRepository : INonRelationalDatabaseService
 
     public async Task SaveScrapeResults(IEnumerable<ScrapedItem> results)
     {
-        List<ScrapedItem> allResults = new List<ScrapedItem>();
+        List<ScrapedItemEntity> allResults = new List<ScrapedItemEntity>();
 
         if (File.Exists(_path))
         {
             string existingJson = await File.ReadAllTextAsync(_path);
-            var oldItems = JsonSerializer.Deserialize<List<ScrapedItem>>(existingJson);
+            var oldItems = JsonSerializer.Deserialize<List<ScrapedItemEntity>>(existingJson);
             
             if (oldItems != null)
             {
@@ -39,7 +40,7 @@ public class ScrapingRepository : INonRelationalDatabaseService
             }
         }
 
-        allResults.AddRange(results);
+        allResults.AddRange(results.Select(MapToEntity));
 
         var options = new JsonSerializerOptions { WriteIndented = true };
         string jsonContent = JsonSerializer.Serialize(allResults, options);
@@ -55,8 +56,13 @@ public class ScrapingRepository : INonRelationalDatabaseService
         if (File.Exists(_path))
         {
             string jsonContent = await File.ReadAllTextAsync(_path);
-            result = JsonSerializer.Deserialize<List<ScrapedItem>>(jsonContent) ?? new List<ScrapedItem>();
-            await _logger.WriteLogToFile($"[NoSQL] Успешно прочитано {result.Count()} записей из файла");
+            var entities = JsonSerializer.Deserialize<List<ScrapedItemEntity>>(jsonContent);
+        
+            if (entities != null)
+            {
+                result = entities.Select(MapToDomain).ToList();
+                await _logger.WriteLogToFile($"[NoSQL] Успешно прочитано {result.Count()} записей из файла");
+            }
         }
         else
         {
@@ -65,4 +71,17 @@ public class ScrapingRepository : INonRelationalDatabaseService
 
         return result;
     }
+
+    private ScrapedItemEntity MapToEntity(ScrapedItem item) => new()
+    {
+        Url = item.Url,
+        DataType = item.DataType,
+        Value = item.Value
+    };
+
+    private ScrapedItem MapToDomain(ScrapedItemEntity entity) => new(
+        entity.Url,
+        entity.DataType,
+        entity.Value
+    );
 }

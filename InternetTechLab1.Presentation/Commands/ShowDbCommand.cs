@@ -23,12 +23,14 @@ public class ShowDbCommand : ICommand
             await _logger.WriteLogToFile("[UI] Запрос на просмотр реляционной базы (GitHub Data)");
 
             var users = await _relationalDatabaseService.GetAllUsers();
-            await _logger.WriteLogToFile($"[Database] Загружено пользователей: {users.Count}");
             _visualizerService.ShowDb(users);
 
+            await _logger.WriteLogToFile($"[Database] Загружено пользователей: {users.Count}");
+
             var repos = await _relationalDatabaseService.GetAllRepos();
-            await _logger.WriteLogToFile($"[Database] Загружено репозиториев: {repos.Count}");
             _visualizerService.ShowDb(repos);
+
+            await _logger.WriteLogToFile($"[Database] Загружено репозиториев: {repos.Count}");
         }
         catch (Exception ex)
         {

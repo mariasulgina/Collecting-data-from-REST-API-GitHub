@@ -25,7 +25,7 @@ public class MenuService
         
         _subMenus = new[] 
         {
-            new List<string> { "Получить данные о текущем пользователе", "Репозитории", "Подписчики пользователя", "Посмотреть базу данных", "Очистить базу данных", "Выход" },
+            new List<string> { "Получить данные о текущем пользователе", "Репозитории", "Подписчики пользователя", "Посмотреть базу данных", "Очистить базу данных", "Найти пользователя в базе данных", "Выход" },
             new List<string> { "Web Scraping по URL", "Посмотреть результаты Scraping", "Очистить базу данных", "Выход" }
         };
     }
@@ -56,7 +56,7 @@ public class MenuService
 
                     if (subChoice == _subMenus[mainChoice].Count - 1) 
                     {
-                        await _logger.WriteLogToFile("[UI] Возврат в главное меню.");
+                        await _logger.WriteLogToFile("[UI] Возврат в главное меню");
                         break;
                     }
 
@@ -68,7 +68,20 @@ public class MenuService
 
                         await _logger.WriteLogToFile($"[UI] Выбрана команда: {_subMenus[mainChoice][subChoice]}");
 
-                        await command.Execute();
+                        try
+                        {
+                            await command.Execute();
+                        }
+                        catch (Exception ex)
+                        {
+                            await _logger.WriteLogToFile($"[CRITICAL] Команда: {_subMenus[mainChoice][subChoice]} | Ошибка: {ex.Message} | StackTrace: {ex.StackTrace}");
+
+                            ForegroundColor = ConsoleColor.Red;
+                            WriteLine("\n[!] Ошибка выполнения команды");
+                            ResetColor();
+
+                            WriteLine($" Сообщение: {ex.Message}");
+                        }
 
                         WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню...");
                         ReadKey();
@@ -76,7 +89,7 @@ public class MenuService
                     else 
                     {
                         await _logger.WriteLogToFile($"[Warning] Команда для выбора [{mainChoice}, {subChoice}] не найдена в Factory");
-                        WriteLine("\nКоманда в разработке... Нажмите клавишу.");
+                        WriteLine("\nКоманда в разработке... Нажмите клавишу");
                         ReadKey();
                     }
                 }

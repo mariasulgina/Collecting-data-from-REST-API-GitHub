@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -41,6 +41,7 @@ public class CommandFactory
             (0, 2) => new GetFollowersCommand(_gitHubService, _visualizer, _loggerService),
             (0, 3) => new ShowDbCommand(_relDb, _visualizer, _loggerService),
             (0, 4) => new ClearDbCommand(_relDb, _loggerService),
+            (0, 5) => new SearchCommand(_gitHubService, _visualizer, _loggerService),
 
             (1, 0) => new WebScrapingCommand(_scrapingService, _visualizer, _loggerService),
             (1, 1) => new ShowNoSqlDbCommand(_nonRelDb, _visualizer, _loggerService),

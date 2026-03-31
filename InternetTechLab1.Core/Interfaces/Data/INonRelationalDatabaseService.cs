@@ -1,4 +1,4 @@
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 
 namespace InternetTechLab1.Core.Interfaces;
 

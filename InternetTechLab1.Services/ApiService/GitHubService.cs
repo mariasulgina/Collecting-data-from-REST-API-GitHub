@@ -1,5 +1,5 @@
-using InternetTechLab1.Models;
-
+using InternetTechLab1.Services.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Services;
@@ -19,85 +19,116 @@ public class GitHubService : IGitHubService
 
     public async Task<GitHubUser?> GetAndSaveUserAsync(string username)
     {
-        try 
-        {
-            await _logger.WriteLogToFile($"[GitHubService] Запрос данных пользователя: {username}");
-            
-            string endpoint = $"users/{username}";
-            var user = await _apiClient.GetFromApiGitHubInformationAsync<GitHubUser>(endpoint);
+        var user = new GitHubUser();
 
-            if (user != null)
-            {
-                await _logger.WriteLogToFile($"[GitHubService] Данные {username} получены. Сохранение в БД...");
-                await _database.SaveApiGitHubUserInformation(user);
-            }
-            else 
-            {
-                await _logger.WriteLogToFile($"[GitHubService] Пользователь {username} не найден в API GitHub.");
-            }
+        await _logger.WriteLogToFile($"[GitHubService] Запрос данных пользователя: {username}");
+        
+        string endpoint = $"users/{username}";
+        var userDto = await _apiClient.GetFromApiGitHubInformationAsync<GitHubUserDto>(endpoint);
 
-            return user;
-        }
-        catch (Exception ex)
+        if (userDto != null)
         {
-            await _logger.WriteLogToFile($"[Error] Ошибка при работе с пользователем {username}: {ex.Message}");
-            throw;
+            user = MapToDomainUser(userDto);
+
+            await _logger.WriteLogToFile($"[GitHubService] Данные {username} получены. Сохранение в БД...");
+            await _database.SaveApiGitHubUserInformation(user);
         }
+        else 
+        {
+            await _logger.WriteLogToFile($"[GitHubService] Пользователь {username} не найден в API GitHub");
+        }
+
+        return user;
     }
 
     public async Task<List<GitHubUser>?> GetAndSaveFollowersAsync(string username)
     {
-        try 
-        {
-            await _logger.WriteLogToFile($"[GitHubService] Запрос фолловеров для: {username}");
-            
-            string endpoint = $"users/{username}/followers";
-            var followers = await _apiClient.GetFromApiGitHubInformationAsync<List<GitHubUser>>(endpoint);
+        var followers = new List<GitHubUser>();
 
-            if (followers != null && followers.Count > 0)
-            {
-                await _logger.WriteLogToFile($"[GitHubService] Получено {followers.Count} фолловеров для {username}. Сохранение...");
-                await _database.SaveApiGitHubFollowersInformation(followers); 
-            }
-            else 
-            {
-                await _logger.WriteLogToFile($"[GitHubService] У пользователя {username} фолловеры не найдены или список пуст.");
-            }
+        await _logger.WriteLogToFile($"[GitHubService] Запрос фолловеров для: {username}");
+        
+        string endpoint = $"users/{username}/followers";
+        var followersDto = await _apiClient.GetFromApiGitHubInformationAsync<List<GitHubUserDto>>(endpoint);
 
-            return followers;
-        }
-        catch (Exception ex)
+        if (followersDto != null && followersDto.Count > 0)
         {
-            await _logger.WriteLogToFile($"[Error] Ошибка при получении фолловеров {username}: {ex.Message}");
-            throw;
+            followers = followersDto.Select(user => MapToDomainUser(user)).ToList();
+
+            await _logger.WriteLogToFile($"[GitHubService] Получено {followers.Count} фолловеров для {username}. Сохранение...");
+            await _database.SaveApiGitHubFollowersInformation(followers); 
         }
+        else 
+        {
+            await _logger.WriteLogToFile($"[GitHubService] У пользователя {username} фолловеры не найдены или список пуст.");
+        }
+
+        return followers;
     }
 
     public async Task<List<GitHubRepo>?> GetAndSaveReposAsync(string username)
     {
-        try 
-        {
-            await _logger.WriteLogToFile($"[GitHubService] Запрос репозиториев для: {username}");
-            
-            string endpoint = $"users/{username}/repos";
-            var repos = await _apiClient.GetFromApiGitHubInformationAsync<List<GitHubRepo>>(endpoint);
+        var repos = new List<GitHubRepo>();
 
-            if (repos != null && repos.Count > 0)
-            {
-                await _logger.WriteLogToFile($"[GitHubService] Получено {repos.Count} репозиториев для {username}. Сохранение...");
-                await _database.SaveApiGitHubReposInformation(repos);
-            }
-            else 
-            {
-                await _logger.WriteLogToFile($"[GitHubService] У пользователя {username} репозитории не найдены.");
-            }
+        await _logger.WriteLogToFile($"[GitHubService] Запрос репозиториев для: {username}");
+        
+        string endpoint = $"users/{username}/repos";
+        var reposDto = await _apiClient.GetFromApiGitHubInformationAsync<List<GitHubRepoDto>>(endpoint);
 
-            return repos;
-        }
-        catch (Exception ex)
+        if (reposDto != null && reposDto.Count > 0)
         {
-            await _logger.WriteLogToFile($"[Error] Ошибка при получении репозиториев {username}: {ex.Message}");
-            throw;
+            repos = reposDto.Select(repo => MapToDomainRepo(repo)).ToList();
+
+            await _logger.WriteLogToFile($"[GitHubService] Получено {repos.Count} репозиториев для {username}. Сохранение...");
+            await _database.SaveApiGitHubReposInformation(repos);
         }
+        else 
+        {
+            await _logger.WriteLogToFile($"[GitHubService] У пользователя {username} репозитории не найдены.");
+        }
+
+        return repos;
+    }
+
+    public async Task<GitHubUser?> GetUserByLoginAsync(string username)
+    {
+        GitHubUser? user = await _database.GetUserByLoginAsync(username);
+        return user;
+    }
+
+    public async Task<List<GitHubRepo>?> GetReposByLoginUserAsync(string username)
+    {
+        List<GitHubRepo>? repos = await _database.GetReposByLoginUserAsync(username);
+        return repos;
+    }
+
+    private GitHubUser MapToDomainUser(GitHubUserDto dto) => new()
+    {
+        Id = dto.Id,
+        Login = dto.Login,
+        Name = dto.Name,
+        AvatarUrl = dto.AvatarUrl,
+        Bio = dto.Bio,
+        Location = dto.Location,
+        Company = dto.Company,
+        PublicRepos = dto.PublicRepos,
+        Followers = dto.Followers,
+        Following = dto.Following,
+        CreatedAt = dto.CreatedAt,
+        Email = dto.Email
+    };
+
+    private GitHubRepo MapToDomainRepo(GitHubRepoDto dto) 
+    {
+        return new GitHubRepo 
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            FullName = dto.FullName,
+            Description = dto.Description,
+            Language = dto.Language,
+            StargazersCount = dto.StargazersCount,
+            ForksCount = dto.ForksCount,
+            Owner = dto.Owner != null ? MapToDomainUser(dto.Owner) : null 
+        };
     }
 }

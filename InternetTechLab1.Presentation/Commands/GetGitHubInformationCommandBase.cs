@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using InternetTechLab1.UI;
 using InternetTechLab1.Core.Interfaces;
 
@@ -28,16 +28,19 @@ public abstract class GetGitHubInformationCommandBase : ICommand
             if (string.IsNullOrWhiteSpace(username))
             {
                 await _logger.WriteLogToFile("[UI] Попытка вызова GitHub-команды с пустым именем пользователя");
+
                 Console.WriteLine("Имя пользователя не может быть пустым");
             } else
             {
                 await _logger.WriteLogToFile($"[Command] Запуск {this.GetType().Name} для пользователя: {username}");
+
                 await ExecuteGitHubLogic(username);
             }
         }
         catch (Exception ex)
         {
             await _logger.WriteLogToFile($"[Fatal Error] Ошибка в {this.GetType().Name}: {ex.Message}");
+            
             Console.WriteLine($"Произошла ошибка: {ex.Message}");
         }
     }

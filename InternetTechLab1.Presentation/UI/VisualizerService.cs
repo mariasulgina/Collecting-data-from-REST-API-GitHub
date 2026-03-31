@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using InternetTechLab1.Models;
+using InternetTechLab1.Core.Models;
 using static System.Console;
 using InternetTechLab1.Core.Interfaces;
 
@@ -8,11 +8,18 @@ namespace InternetTechLab1.UI;
 
 public class VisualizerService : IVisualizerService
 {
+    //try
     public void ShowGitHubUser(GitHubUser user) 
     {
         Clear();
         ConsoleStyler.PrintHeader("Профиль пользователя:");
 
+        ShowGitHubUserInformation(user);
+        ConsoleStyler.PrintIndentation();
+    }
+
+    private void ShowGitHubUserInformation(GitHubUser user) 
+    {
         Console.WriteLine($" Имя: {user.Name ?? "Не указано"}");
         Console.WriteLine($" ID: {user.Id}");
         Console.WriteLine($" Местоположение: {user.Location ?? "Скрыто"}");
@@ -20,8 +27,6 @@ public class VisualizerService : IVisualizerService
         Console.WriteLine($" Публичные репозитории: {user.PublicRepos}");
         Console.WriteLine($" Подписчики: {user.Followers} | Подписки: {user.Following}");
         Console.WriteLine($" GitHub URL: {user.HtmlUrl}");
-
-        ConsoleStyler.PrintIndentation();
     }
 
     public void ShowGitHubFollowers(List<GitHubUser> followers, string username)
@@ -40,13 +45,19 @@ public class VisualizerService : IVisualizerService
         ConsoleStyler.PrintIndentation();
     }
 
-    public void ShowGitHubRepos(List<GitHubRepo> gitHubRepos)
+    public void ShowGitHubRepos(List<GitHubRepo> repos)
     {
         Clear();
         ConsoleStyler.PrintHeader("Репозитории пользователя:");
-        Console.WriteLine($"Результат поиска: Найдено {gitHubRepos.Count} репозиториев");
+        Console.WriteLine($"Результат поиска: Найдено {repos.Count} репозиториев");
 
-        foreach (var repo in gitHubRepos)
+        ShowGitHubReposInformation(repos);
+        ConsoleStyler.PrintIndentation();
+    }
+
+    private void ShowGitHubReposInformation(List<GitHubRepo> repos) 
+    {
+        foreach (var repo in repos)
         {
             Console.WriteLine($"   Репозиторий: {repo.Name}");
             Console.WriteLine($"   URL: {repo.HtmlUrl}");
@@ -55,8 +66,6 @@ public class VisualizerService : IVisualizerService
             Console.WriteLine($"   Язык: {repo.Language ?? "Не определен"}");
             ConsoleStyler.PrintIndentation();
         }
-
-        ConsoleStyler.PrintIndentation();
     }
 
     public void ShowDb<T>(IEnumerable<T> data) where T : class
@@ -96,8 +105,7 @@ public class VisualizerService : IVisualizerService
             return;
         } 
 
-        string firstUrl = results.First().Url;
-        ConsoleStyler.PrintHeader($"Результаты для: {firstUrl}");
+        ConsoleStyler.PrintHeader($"Результаты скреппинга");
 
         var groupResults = results.GroupBy(p => p.DataType);
         foreach(var group in groupResults)
@@ -114,5 +122,21 @@ public class VisualizerService : IVisualizerService
     public void ShowNoSqlDb(IEnumerable<ScrapedItem> results)
     {
         ShowScrapeResults(results);
+    }
+
+    public void ShowGitHubUserAndHisRepos(GitHubUser user, List<GitHubRepo> repos)
+    {
+        Clear();
+        ConsoleStyler.PrintHeader("Профиль пользователя и его репозитории:");
+        ConsoleStyler.PrintHeader("Профиль пользователя:");
+
+        ShowGitHubUserInformation(user);
+        ConsoleStyler.PrintIndentation();
+
+        ConsoleStyler.PrintHeader("Репозитории пользователя:");
+        Console.WriteLine($"Результат поиска: Найдено {repos.Count} репозиториев");
+
+        ShowGitHubReposInformation(repos);
+        ConsoleStyler.PrintIndentation();
     }
 }
