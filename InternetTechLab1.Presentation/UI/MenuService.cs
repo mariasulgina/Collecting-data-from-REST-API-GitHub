@@ -30,9 +30,9 @@ public class MenuService
         };
     }
 
-    public async Task Run() 
+    public async Task RunAsync() 
     {
-        await _logger.WriteLogToFile("[System] Приложение запущено. Главное меню");
+        await _logger.WriteLogToFileAsync("[System] Приложение запущено. Главное меню");
         bool isRunning = true;
 
         while (isRunning) 
@@ -42,12 +42,12 @@ public class MenuService
 
             if (mainChoice == _mainMenu.Count - 1) 
             {
-                await _logger.WriteLogToFile("[System] Пользователь выбрал 'Выход'. Завершение работы");
+                await _logger.WriteLogToFileAsync("[System] Пользователь выбрал 'Выход'. Завершение работы");
                 isRunning = false;
             }
             else
             {
-                await _logger.WriteLogToFile($"[UI] Переход в подменю: {_mainMenu[mainChoice]}");
+                await _logger.WriteLogToFileAsync($"[UI] Переход в подменю: {_mainMenu[mainChoice]}");
 
                 while (true) 
                 {
@@ -56,7 +56,7 @@ public class MenuService
 
                     if (subChoice == _subMenus[mainChoice].Count - 1) 
                     {
-                        await _logger.WriteLogToFile("[UI] Возврат в главное меню");
+                        await _logger.WriteLogToFileAsync("[UI] Возврат в главное меню");
                         break;
                     }
 
@@ -66,15 +66,15 @@ public class MenuService
                     {
                         Clear();
 
-                        await _logger.WriteLogToFile($"[UI] Выбрана команда: {_subMenus[mainChoice][subChoice]}");
+                        await _logger.WriteLogToFileAsync($"[UI] Выбрана команда: {_subMenus[mainChoice][subChoice]}");
 
                         try
                         {
-                            await command.Execute();
+                            await command.ExecuteAsync();
                         }
                         catch (Exception ex)
                         {
-                            await _logger.WriteLogToFile($"[CRITICAL] Команда: {_subMenus[mainChoice][subChoice]} | Ошибка: {ex.Message} | StackTrace: {ex.StackTrace}");
+                            await _logger.WriteLogToFileAsync($"[CRITICAL] Команда: {_subMenus[mainChoice][subChoice]} | Ошибка: {ex.Message} | StackTrace: {ex.StackTrace}");
 
                             ForegroundColor = ConsoleColor.Red;
                             WriteLine("\n[!] Ошибка выполнения команды");
@@ -88,7 +88,7 @@ public class MenuService
                     } 
                     else 
                     {
-                        await _logger.WriteLogToFile($"[Warning] Команда для выбора [{mainChoice}, {subChoice}] не найдена в Factory");
+                        await _logger.WriteLogToFileAsync($"[Warning] Команда для выбора [{mainChoice}, {subChoice}] не найдена в Factory");
                         WriteLine("\nКоманда в разработке... Нажмите клавишу");
                         ReadKey();
                     }

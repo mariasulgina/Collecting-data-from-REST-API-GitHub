@@ -11,20 +11,20 @@ public class GetCurrentUserCommand : GetGitHubInformationCommandBase
     IVisualizerService visualizerService, ILoggerService logger)
     : base(gitHubService, visualizerService, logger) { }
 
-    protected override async Task ExecuteGitHubLogic(string username)
+    protected override async Task ExecuteGitHubLogicAsync(string username)
     {
         GitHubUser? gitHubUser = await _service.GetAndSaveUserAsync(username);
 
         if (gitHubUser != null) 
         {
-            await _logger.WriteLogToFile($"[UI] Данные пользователя {username} (ID: {gitHubUser.Id}) успешно получены и отправлены на визуализацию");
+            await _logger.WriteLogToFileAsync($"[UI] Данные пользователя {username} (ID: {gitHubUser.Id}) успешно получены и отправлены на визуализацию");
 
             _visualizer.ShowGitHubUser(gitHubUser);
         } 
         else
         {
-            await _logger.WriteLogToFile($"[UI] Предупреждение: Пользователь {username} не найден в GitHub API");
-            
+            await _logger.WriteLogToFileAsync($"[UI] Предупреждение: Пользователь {username} не найден в GitHub API");
+
             Console.WriteLine($"Пользователь {username} не найден");
         }
     }

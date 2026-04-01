@@ -9,7 +9,7 @@ public class FileLogger : ILoggerService
 
     public FileLogger() { }
 
-    public async Task WriteLogToFile(string message)
+    public async Task WriteLogToFileAsync(string message)
     {
         string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] -- {message} -- {Environment.NewLine}";
 

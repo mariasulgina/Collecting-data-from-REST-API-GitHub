@@ -16,14 +16,14 @@ public class GitHubRepository : IRelationalDatabaseService
         _logger = logger;
     }
 
-    public async Task SaveApiGitHubUserInformation(GitHubUser user) 
+    public async Task SaveApiGitHubUserInformationAsync(GitHubUser user) 
     {
         var entity = MapToEntity(user);
         await _gitHubDbContext.AddAsync(entity);
-        await _logger.WriteLogToFile($"[Database] Пользователь {user.Login} успешно добавлен в очередь сохранения");
+        await _logger.WriteLogToFileAsync($"[Database] Пользователь {user.Login} успешно добавлен в очередь сохранения");
     }
 
-    public async Task SaveApiGitHubReposInformation(List<GitHubRepo> repos)
+    public async Task SaveApiGitHubReposInformationAsync(List<GitHubRepo> repos)
     {
         foreach(var repo in repos)
         {
@@ -31,10 +31,10 @@ public class GitHubRepository : IRelationalDatabaseService
             await _gitHubDbContext.Repos.AddAsync(entity);
         }
 
-        await _logger.WriteLogToFile($"[Database] {repos.Count} репозиториев добавлены в очередь сохранения");
+        await _logger.WriteLogToFileAsync($"[Database] {repos.Count} репозиториев добавлены в очередь сохранения");
     }
 
-    public async Task SaveApiGitHubFollowersInformation(List<GitHubUser> followers)
+    public async Task SaveApiGitHubFollowersInformationAsync(List<GitHubUser> followers)
     {
         foreach (var follower in followers)
         {
@@ -42,16 +42,16 @@ public class GitHubRepository : IRelationalDatabaseService
             _gitHubDbContext.Users.Update(entity);
         }
 
-        await _logger.WriteLogToFile($"[Database] {followers.Count} фолловеров добавлены в очередь сохранения");
+        await _logger.WriteLogToFileAsync($"[Database] {followers.Count} фолловеров добавлены в очередь сохранения");
     }
 
-    public async Task<List<GitHubUser>> GetAllUsers() 
+    public async Task<List<GitHubUser>> GetAllUsersAsync() 
     {
         var entities = await _gitHubDbContext.Users.ToListAsync();
         return entities.Select(MapToDomain).ToList();
     }
 
-    public async Task<List<GitHubRepo>> GetAllRepos()
+    public async Task<List<GitHubRepo>> GetAllReposAsync()
     {
         var entities = await _gitHubDbContext.Repos
             .Include(e => e.Owner)
@@ -60,11 +60,11 @@ public class GitHubRepository : IRelationalDatabaseService
         return entities.Select(MapToDomain).ToList();
     }
 
-    public async Task ClearDataBase()
+    public async Task ClearDataBaseAsync()
     {
         await _gitHubDbContext.Repos.ExecuteDeleteAsync();
         await _gitHubDbContext.Users.ExecuteDeleteAsync();
-        await _logger.WriteLogToFile("[Database] База данных успешно очищена");
+        await _logger.WriteLogToFileAsync("[Database] База данных успешно очищена");
     }
 
     public async Task<GitHubUser?> GetUserByLoginAsync(string username)

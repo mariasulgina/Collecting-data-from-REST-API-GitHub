@@ -32,7 +32,7 @@ public class GitHubApiService : IGitHubApiService
 
         try
         {
-            await _logger.WriteLogToFile($"[GitHubAPI] Запрос: GET {endpoint}");
+            await _logger.WriteLogToFileAsync($"[GitHubAPI] Запрос: GET {endpoint}");
 
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(_defaultTimeoutSeconds)); 
 
@@ -40,26 +40,26 @@ public class GitHubApiService : IGitHubApiService
 
             if (gitHubInformation != null)
             {
-                await _logger.WriteLogToFile($"[GitHubAPI] Ответ от {endpoint} успешно получен и десериализован");
+                await _logger.WriteLogToFileAsync($"[GitHubAPI] Ответ от {endpoint} успешно получен и десериализован");
             }
             else
             {
-                await _logger.WriteLogToFile($"[GitHubAPI] Предупреждение: API вернул пустой результат (null) для {endpoint}");
+                await _logger.WriteLogToFileAsync($"[GitHubAPI] Предупреждение: API вернул пустой результат (null) для {endpoint}");
             }
         }
         catch (OperationCanceledException)
         {
-            await _logger.WriteLogToFile($"[Error] Время ожидания ({_defaultTimeoutSeconds}с) истекло для {endpoint}");
+            await _logger.WriteLogToFileAsync($"[Error] Время ожидания ({_defaultTimeoutSeconds}с) истекло для {endpoint}");
             throw new Exception("Ошибка: Время ожидания ответа от GitHub истекло");
         }
         catch (HttpRequestException ex)
         {
-            await _logger.WriteLogToFile($"[Error] Сетевая ошибка при запросе к ({endpoint}): {ex.Message}");
+            await _logger.WriteLogToFileAsync($"[Error] Сетевая ошибка при запросе к ({endpoint}): {ex.Message}");
             throw new Exception($"Ошибка сети: Проверьте подключение к интернету ({ex.Message})");
         } 
         catch (Exception ex)
         {
-            await _logger.WriteLogToFile($"[Error] Непредвиденная ошибка API ({endpoint}): {ex.Message}");
+            await _logger.WriteLogToFileAsync($"[Error] Непредвиденная ошибка API ({endpoint}): {ex.Message}");
             throw new Exception($"Ошибка API: {ex.Message}");
         }
 

@@ -1,7 +1,5 @@
 ﻿using InternetTechLab1.Data.Models;
 using InternetTechLab1.Core.Models;
-using System.Text.Json;
-using System.IO;
 using InternetTechLab1.Core.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Bson;
@@ -12,24 +10,24 @@ public class ScrapingRepository : INonRelationalDatabaseService
 {
     private readonly ILoggerService _logger;
     private readonly IMongoCollection<ScrapedItemEntity> _collection;
-    private readonly NoSqlSettings settings = new();
 
     public ScrapingRepository(ILoggerService logger)
     {
         _logger = logger;
+        var settings = new NoSqlSettings();
 
         var client = new MongoClient(settings.Uri);
         var database = client.GetDatabase("scraped_data");
-        _collection = database.GetCollection<ScrapedItemEntity>("scraped_items");;
+        _collection = database.GetCollection<ScrapedItemEntity>("scraped_items");
     }
     
-    public async Task ClearDataBase()
+    public async Task ClearDataBaseAsync()
     {
         await _collection.DeleteManyAsync(_ => true);
-        await _logger.WriteLogToFile($"[NoSQL] База данных успешно очищена");
+        await _logger.WriteLogToFileAsync($"[NoSQL] База данных успешно очищена");
     }
 
-    public async Task SaveScrapeResults(IEnumerable<ScrapedItem> results)
+    public async Task SaveScrapeResultsAsync(IEnumerable<ScrapedItem> results)
     {
         int addedCount = 0;
 
@@ -41,15 +39,15 @@ public class ScrapingRepository : INonRelationalDatabaseService
         }
 
         long count = await _collection.CountDocumentsAsync(_ => true);
-        await _logger.WriteLogToFile($"[NoSQL] Добавлено: {addedCount}");
+        await _logger.WriteLogToFileAsync($"[NoSQL] Добавлено: {addedCount}");
     }
 
-    public async Task<IEnumerable<ScrapedItem>> GetAllWebScrapResults()
+    public async Task<IEnumerable<ScrapedItem>> GetAllWebScrapResultsAsync()
     {
         var entities = await _collection.Find(_ => true).ToListAsync();
         var results = entities.Select(MapToDomain).ToList();
 
-        await _logger.WriteLogToFile($"[NoSQL] Прочитано из базы: {results.Count} записей");
+        await _logger.WriteLogToFileAsync($"[NoSQL] Прочитано из базы: {results.Count} записей");
 
         return results;
     }

@@ -41,16 +41,16 @@ public class ScrapingService : IScrapingService
             response.EnsureSuccessStatusCode();
 
             string htmlContent = await response.Content.ReadAsStringAsync();
-            await _logger.WriteLogToFile($"[Service] HTML получен (размер: {htmlContent.Length} символов)");
+            await _logger.WriteLogToFileAsync($"[Service] HTML получен (размер: {htmlContent.Length} символов)");
 
             HtmlParser parser = new HtmlParser();
             IHtmlDocument document = await parser.ParseDocumentAsync(htmlContent);
 
             IEnumerable<ScrapedItem> results = GetScrapeResults(document);
-            await _logger.WriteLogToFile($"[Service] Парсинг завершен. Найдено элементов: {results.Count()}");
+            await _logger.WriteLogToFileAsync($"[Service] Парсинг завершен. Найдено элементов: {results.Count()}");
 
-            await _database.SaveScrapeResults(results);
-            await _logger.WriteLogToFile("[Service] Данные успешно сохранены в репозиторий");
+            await _database.SaveScrapeResultsAsync(results);
+            await _logger.WriteLogToFileAsync("[Service] Данные успешно сохранены в репозиторий");
 
             return results;
         }
@@ -68,9 +68,21 @@ public class ScrapingService : IScrapingService
         }
         catch (Exception ex)
         {
-            await _logger.WriteLogToFile($"[Error] Ошибка в ScrapingService: {ex.Message}");
+            await _logger.WriteLogToFileAsync($"[Error] Ошибка в ScrapingService: {ex.Message}");
             throw; 
         }
+    }
+
+    public async Task ClearAllDataAsync() 
+    {
+        await _logger.WriteLogToFileAsync("[ScrapingService] Очистка NoSQL базы...");
+        await _database.ClearDataBaseAsync();
+    }
+
+    public async Task<IEnumerable<ScrapedItem>> GetScrapedResultsAsync()
+    {
+        await _logger.WriteLogToFileAsync("[ScrapingService] Чтение результатов скрапинга из NoSQL...");
+        return await _database.GetAllWebScrapResultsAsync();
     }
 
     private IEnumerable<ScrapedItem> GetScrapeResults(IHtmlDocument document)

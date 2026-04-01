@@ -11,35 +11,35 @@ public class SearchCommand : GetGitHubInformationCommandBase
     IVisualizerService visualizerService, ILoggerService logger)
     : base(gitHubService, visualizerService, logger) { }
 
-    protected override async Task ExecuteGitHubLogic(string username)
+    protected override async Task ExecuteGitHubLogicAsync(string username)
     {
-        await _logger.WriteLogToFile($"[UI] Запрос пользователя {username} и списка его репозиториев");
+        await _logger.WriteLogToFileAsync($"[UI] Запрос пользователя {username} и списка его репозиториев");
 
         var user = await _service.GetUserByLoginAsync(username);
         var repos = await _service.GetReposByLoginUserAsync(username);
 
         if (user != null && (repos != null && repos.Any()))
         {
-            await _logger.WriteLogToFile($"[UI] Успех: Для {username} найден профиль и {repos.Count} репозиториев");
+            await _logger.WriteLogToFileAsync($"[UI] Успех: Для {username} найден профиль и {repos.Count} репозиториев");
             _visualizer.ShowGitHubUserAndHisRepos(user, repos);
         }
         else if (user != null)
         {
-            await _logger.WriteLogToFile($"[UI] Частичный успех: Для {username} найден только профиль. Репозитории отсутствуют");
+            await _logger.WriteLogToFileAsync($"[UI] Частичный успех: Для {username} найден только профиль. Репозитории отсутствуют");
             Console.WriteLine($"Получены данные о пользователе '{username}'.\nУ Пользователя '{username}' еще нет репозиториев");
 
             _visualizer.ShowGitHubUser(user);
         }
         else if (repos != null && repos.Any())
         {
-            await _logger.WriteLogToFile($"[Warning] Странное состояние: Для {username} найдены репозитории ({repos.Count}), но сам профиль не найден");
+            await _logger.WriteLogToFileAsync($"[Warning] Странное состояние: Для {username} найдены репозитории ({repos.Count}), но сам профиль не найден");
             Console.WriteLine($"Получены данные о репозитории пользователя '{username}'.\nПользователя '{username}' еще нет в базе. Сначала используйте команду 'Получить данные о пользователе'");
-            
+
             _visualizer.ShowGitHubRepos(repos);
         }
         else
         {
-            await _logger.WriteLogToFile($"[UI] Поиск завершен: Данные для {username} в локальной базе полностью отсутствуют");
+            await _logger.WriteLogToFileAsync($"[UI] Поиск завершен: Данные для {username} в локальной базе полностью отсутствуют");
             Console.WriteLine($"Пользователя '{username}' еще нет в базе.\nУ Пользователя '{username}' еще нет репозиториев");
         }
     }

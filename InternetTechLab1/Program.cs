@@ -26,12 +26,10 @@ class Program
             gitHubService, 
             scrapingService, 
             visualizerService, 
-            gitHubDb, 
-            scrapingDb,
             loggerService
         );
 
         MenuService menu = new MenuService(factory, loggerService);
-        await menu.Run();
+        await menu.RunAsync();
     }
 }

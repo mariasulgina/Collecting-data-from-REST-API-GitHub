@@ -11,20 +11,20 @@ public class GetReposCommand : GetGitHubInformationCommandBase
     IVisualizerService visualizerService, ILoggerService logger)
     : base(gitHubService, visualizerService, logger) { }
 
-    protected override async Task ExecuteGitHubLogic(string username)
+    protected override async Task ExecuteGitHubLogicAsync(string username)
     {
-        await _logger.WriteLogToFile($"[UI] Запрос списка репозиториев для пользователя: {username}");
+        await _logger.WriteLogToFileAsync($"[UI] Запрос списка репозиториев для пользователя: {username}");
 
         List<GitHubRepo>? gitHubRepos = await _service.GetAndSaveReposAsync(username);
 
         if (gitHubRepos != null && gitHubRepos.Count != 0)
         {
-            await _logger.WriteLogToFile($"[UI] Успешно получено {gitHubRepos.Count} репозиториев для {username} и отправлены на визуализацию");
-            
+            await _logger.WriteLogToFileAsync($"[UI] Успешно получено {gitHubRepos.Count} репозиториев для {username} и отправлены на визуализацию");
+
             _visualizer.ShowGitHubRepos(gitHubRepos);
         } else
         {
-            await _logger.WriteLogToFile($"[UI] Репозитории для {username} не найдены или API вернул пустой список");
+            await _logger.WriteLogToFileAsync($"[UI] Репозитории для {username} не найдены или API вернул пустой список");
 
             Console.WriteLine($"У пользователя {username} репозитории не найдены");
         }

@@ -18,48 +18,48 @@ public class WebScrapingCommand : ICommand
         _logger = logger;
     }
 
-    public async Task Execute() 
+    public async Task ExecuteAsync() 
     {
         Console.Write("Введите URL: ");
         string? urlname = Console.ReadLine();
 
         if (string.IsNullOrWhiteSpace(urlname))
         {
-            await _logger.WriteLogToFile("[UI] Попытка скрапинга с пустым URL");
+            await _logger.WriteLogToFileAsync("[UI] Попытка скрапинга с пустым URL");
             Console.WriteLine("URL не может быть пустым");
         } 
         else
         {
             try 
             {
-                await _logger.WriteLogToFile($"[UI] Запущена команда WebScraping для URL: {urlname}");
+                await _logger.WriteLogToFileAsync($"[UI] Запущена команда WebScraping для URL: {urlname}");
 
                 IEnumerable<ScrapedItem>? results = await _scrapingService.GetFromURLWebScrapingInformation(urlname);
 
                 if (results != null)
                 {
                     _visualizer.ShowScrapeResults(results);
-                    await _logger.WriteLogToFile($"[UI] Результаты для {urlname} успешно отображены пользователю");
+                    await _logger.WriteLogToFileAsync($"[UI] Результаты для {urlname} успешно отображены пользователю");
                 } 
                 else
                 {
-                    await _logger.WriteLogToFile($"[UI] Скрапинг {urlname} завершился без результатов");
+                    await _logger.WriteLogToFileAsync($"[UI] Скрапинг {urlname} завершился без результатов");
                     Console.WriteLine("Ничего не удалось найти по данному адресу");
                 }
             }
             catch (ArgumentException ex)
             {
-                await _logger.WriteLogToFile($"[UI Error] {ex.Message}");
+                await _logger.WriteLogToFileAsync($"[UI Error] {ex.Message}");
                 Console.WriteLine(ex.Message);
             }
             catch (HttpRequestException ex)
             {
-                await _logger.WriteLogToFile($"[Network Error] {urlname}: {ex.Message}");
+                await _logger.WriteLogToFileAsync($"[Network Error] {urlname}: {ex.Message}");
                 Console.WriteLine($"Ошибка сети: Не удалось открыть сайт. Проверьте подключение.");
             }
             catch (Exception ex)
             {
-                await _logger.WriteLogToFile($"[Critical Error] {ex.Message}");
+                await _logger.WriteLogToFileAsync($"[Critical Error] {ex.Message}");
                 Console.WriteLine($"Ошибка: {ex.Message}"); 
             }
         }

@@ -5,37 +5,37 @@ namespace InternetTechLab1.Commands;
 
 public class ShowNoSqlDbCommand : ICommand
 {
-    private readonly INonRelationalDatabaseService _nonRelDb;
-    private readonly IVisualizerService _visualizerService;
+    private readonly IScrapingService _service;
+    private readonly IVisualizerService _visualizer;
     private readonly ILoggerService _logger;
 
-    public ShowNoSqlDbCommand(INonRelationalDatabaseService nonRelDb, IVisualizerService visualizerService, ILoggerService logger)
+    public ShowNoSqlDbCommand(IScrapingService service, IVisualizerService visualizer, ILoggerService logger)
     {
-        _nonRelDb = nonRelDb;
-        _visualizerService = visualizerService;
+        _service = service;
+        _visualizer = visualizer;
         _logger = logger;
     }
 
-    public async Task Execute() 
+    public async Task ExecuteAsync() 
     {
         try 
         {
-            await _logger.WriteLogToFile("[UI] Запрос на просмотр NoSQL базы данных (JSON)");
+            await _logger.WriteLogToFileAsync("[UI] Запрос на просмотр NoSQL базы данных (JSON)");
         
-            var webScrapResults = await _nonRelDb.GetAllWebScrapResults();
+            var webScrapResults = await _service.GetScrapedResultsAsync();
 
-            await _logger.WriteLogToFile($"[UI] Из базы извлечено {webScrapResults?.Count() ?? 0} записей скрапинга");
+            await _logger.WriteLogToFileAsync($"[UI] Из базы извлечено {webScrapResults?.Count() ?? 0} записей скрапинга");
 
             if (webScrapResults != null)
             {
-                _visualizerService.ShowNoSqlDb(webScrapResults);
+                _visualizer.ShowNoSqlDb(webScrapResults);
 
-                await _logger.WriteLogToFile($"[UI] Результаты скрапинга успешно отображены пользователю");
+                await _logger.WriteLogToFileAsync($"[UI] Результаты скрапинга успешно отображены пользователю");
             }
         }
         catch (Exception ex)
         {
-            await _logger.WriteLogToFile($"[Error] Ошибка при чтении NoSQL базы: {ex.Message}");
+            await _logger.WriteLogToFileAsync($"[Error] Ошибка при чтении NoSQL базы: {ex.Message}");
             Console.WriteLine($"Ошибка отображения данных: {ex.Message}");
         }
     }

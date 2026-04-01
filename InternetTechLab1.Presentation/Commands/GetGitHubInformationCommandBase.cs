@@ -18,7 +18,7 @@ public abstract class GetGitHubInformationCommandBase : ICommand
         _logger = logger;
     }
 
-    public async Task Execute()
+    public async Task ExecuteAsync()
     {
         try 
         {
@@ -27,23 +27,23 @@ public abstract class GetGitHubInformationCommandBase : ICommand
 
             if (string.IsNullOrWhiteSpace(username))
             {
-                await _logger.WriteLogToFile("[UI] Попытка вызова GitHub-команды с пустым именем пользователя");
+                await _logger.WriteLogToFileAsync("[UI] Попытка вызова GitHub-команды с пустым именем пользователя");
 
                 Console.WriteLine("Имя пользователя не может быть пустым");
             } else
             {
-                await _logger.WriteLogToFile($"[Command] Запуск {this.GetType().Name} для пользователя: {username}");
+                await _logger.WriteLogToFileAsync($"[Command] Запуск {this.GetType().Name} для пользователя: {username}");
 
-                await ExecuteGitHubLogic(username);
+                await ExecuteGitHubLogicAsync(username);
             }
         }
         catch (Exception ex)
         {
-            await _logger.WriteLogToFile($"[Fatal Error] Ошибка в {this.GetType().Name}: {ex.Message}");
-            
+            await _logger.WriteLogToFileAsync($"[Fatal Error] Ошибка в {this.GetType().Name}: {ex.Message}");
+
             Console.WriteLine($"Произошла ошибка: {ex.Message}");
         }
     }
 
-    protected abstract Task ExecuteGitHubLogic(string username);
+    protected abstract Task ExecuteGitHubLogicAsync(string username);
 }
