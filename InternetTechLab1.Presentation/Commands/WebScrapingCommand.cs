@@ -7,13 +7,13 @@ namespace InternetTechLab1.Commands;
 
 public class WebScrapingCommand : ICommand
 {
-    protected readonly IScrapingService _scrapingService;
+    protected readonly IScrapingService _service;
     protected readonly IVisualizerService _visualizer;
     protected readonly ILoggerService _logger;
 
-    public WebScrapingCommand(IScrapingService scrapingService, IVisualizerService visualizer, ILoggerService logger)
+    public WebScrapingCommand(IScrapingService service, IVisualizerService visualizer, ILoggerService logger)
     {
-        _scrapingService = scrapingService;
+        _service = service;
         _visualizer = visualizer;
         _logger = logger;
     }
@@ -34,7 +34,7 @@ public class WebScrapingCommand : ICommand
             {
                 await _logger.WriteLogToFileAsync($"[UI] Запущена команда WebScraping для URL: {urlname}");
 
-                IEnumerable<ScrapedItem>? results = await _scrapingService.GetFromURLWebScrapingInformation(urlname);
+                IEnumerable<ScrapedItem>? results = await _service.GetFromURLWebScrapingInformationAsync(urlname);
 
                 if (results != null)
                 {

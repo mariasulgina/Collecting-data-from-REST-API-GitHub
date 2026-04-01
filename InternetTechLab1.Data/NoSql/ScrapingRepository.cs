@@ -3,6 +3,7 @@ using InternetTechLab1.Core.Models;
 using InternetTechLab1.Core.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Microsoft.Extensions.Configuration;
 
 namespace InternetTechLab1.Data;
 
@@ -11,11 +12,23 @@ public class ScrapingRepository : INonRelationalDatabaseService
     private readonly ILoggerService _logger;
     private readonly IMongoCollection<ScrapedItemEntity> _collection;
 
-    public ScrapingRepository(ILoggerService logger)
+    public ScrapingRepository(ILoggerService logger, IConfiguration configuration)
     {
         _logger = logger;
-        var settings = new NoSqlSettings();
 
+        //десериализация конфигурации в объектный тип с обязательными параметрами (Uri) для подключения манго бд
+        var settings = configuration.GetSection("NoSqlSettings").Get<NoSqlSettings>();
+
+        if (settings == null || string.IsNullOrWhiteSpace(settings.Uri))
+        {
+            throw new Exception("Критическая ошибка: Настройки NoSQL (Uri) не загружены из appsettings.json!");
+        }
+
+        var dbName = string.IsNullOrWhiteSpace(settings.DatabaseName) 
+                     ? "scraped_data" 
+                     : settings.DatabaseName;
+
+        //создание манго бд
         var client = new MongoClient(settings.Uri);
         var database = client.GetDatabase("scraped_data");
         _collection = database.GetCollection<ScrapedItemEntity>("scraped_items");

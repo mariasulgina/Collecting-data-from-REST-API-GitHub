@@ -8,17 +8,17 @@ public class MenuService
 {
     private readonly List<string> _mainMenu;
     private readonly List<string>[] _subMenus;
-    private readonly CommandFactory _commandFactory;
+    private readonly CommandFactory _factory;
     private readonly ILoggerService _logger;
 
-    public MenuService(CommandFactory commandFactory, ILoggerService logger)
+    public MenuService(CommandFactory factory, ILoggerService logger)
     {
-        _commandFactory = commandFactory;
+        _factory = factory;
         _logger = logger;
 
         _mainMenu = new List<string> 
         { 
-            "Модуль A — Получение данных через API -> сохранение в реляционную БД", 
+            "Модуль A — Получение данных из GitHub через API -> сохранение в реляционную БД", 
             "Модуль B — Web Scraping по URL -> сохранение в документоориентированную БД", 
             "Выход"
         };
@@ -60,7 +60,7 @@ public class MenuService
                         break;
                     }
 
-                    var command = _commandFactory.CreateCommand(mainChoice, subChoice);
+                    var command = _factory.CreateCommand(mainChoice, subChoice);
                     
                     if (command != null)
                     {

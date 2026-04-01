@@ -28,7 +28,7 @@ public class ScrapingService : IScrapingService
         _httpClient.Timeout = TimeSpan.FromSeconds(_defaultTimeoutSeconds);
     }
 
-    public async Task<IEnumerable<ScrapedItem>?> GetFromURLWebScrapingInformation(string url)
+    public async Task<IEnumerable<ScrapedItem>?> GetFromURLWebScrapingInformationAsync(string url)
     {
         try 
         {

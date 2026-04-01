@@ -27,3 +27,5 @@ bld/
 *.sqlite
 InternetTechLab1/scraped_data.json
 *log.txt
+*.json
+!appsettings.json

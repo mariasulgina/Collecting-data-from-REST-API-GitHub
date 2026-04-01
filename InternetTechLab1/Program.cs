@@ -2,18 +2,24 @@
 using InternetTechLab1.Data;
 using InternetTechLab1.UI;
 using InternetTechLab1.Commands;
+using Microsoft.Extensions.Configuration;
 
 namespace InternetTechLab1;
 
 class Program 
 {
     public static async Task Main(string[] args) {
+        IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+
         FileLogger loggerService = new FileLogger();
 
         //1 слой
         GitHubApiService api = new GitHubApiService(loggerService);
         GitHubRepository gitHubDb = new GitHubRepository(loggerService);
-        ScrapingRepository scrapingDb = new ScrapingRepository(loggerService);
+        ScrapingRepository scrapingDb = new ScrapingRepository(loggerService, configuration);
 
         //2 слой
         GitHubService gitHubService = new GitHubService(api, gitHubDb, loggerService);
