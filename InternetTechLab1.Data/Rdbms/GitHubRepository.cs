@@ -18,42 +18,74 @@ public class GitHubRepository : IRelationalDatabaseService
 
     public async Task SaveApiGitHubUserInformationAsync(GitHubUser user) 
     {
+        _gitHubDbContext.ChangeTracker.Clear();
+
+        var existing = await _gitHubDbContext.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
         var entity = MapToEntity(user);
-        await _gitHubDbContext.AddAsync(entity);
+
+        if (existing == null) {
+            await _gitHubDbContext.Users.AddAsync(entity);
+        } else {
+            _gitHubDbContext.Users.Update(entity);
+        }
+
+        await _gitHubDbContext.SaveChangesAsync();
         await _logger.WriteLogToFileAsync($"[Database] Пользователь {user.Login} успешно добавлен в очередь сохранения");
     }
 
     public async Task SaveApiGitHubReposInformationAsync(List<GitHubRepo> repos)
     {
+        _gitHubDbContext.ChangeTracker.Clear();
+
         foreach(var repo in repos)
         {
             var entity = MapToEntity(repo);
-            await _gitHubDbContext.Repos.AddAsync(entity);
+            var existing = await _gitHubDbContext.Repos.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == repo.Id);
+
+            if (existing == null) {
+                await _gitHubDbContext.Repos.AddAsync(entity);
+            } else {
+                _gitHubDbContext.Repos.Update(entity);
+            }
         }
 
+        await _gitHubDbContext.SaveChangesAsync();
         await _logger.WriteLogToFileAsync($"[Database] {repos.Count} репозиториев добавлены в очередь сохранения");
     }
 
     public async Task SaveApiGitHubFollowersInformationAsync(List<GitHubUser> followers)
     {
+        _gitHubDbContext.ChangeTracker.Clear();
+
         foreach (var follower in followers)
         {
             var entity = MapToEntity(follower);
-            _gitHubDbContext.Users.Update(entity);
+            var existing = await _gitHubDbContext.Users.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == follower.Id);
+
+            if (existing == null) {
+                await _gitHubDbContext.Users.AddAsync(entity);
+            } else {
+                _gitHubDbContext.Users.Update(entity);
+            }
         }
 
+        await _gitHubDbContext.SaveChangesAsync();
         await _logger.WriteLogToFileAsync($"[Database] {followers.Count} фолловеров добавлены в очередь сохранения");
     }
 
     public async Task<List<GitHubUser>> GetAllUsersAsync() 
     {
-        var entities = await _gitHubDbContext.Users.ToListAsync();
+        var entities = await _gitHubDbContext.Users.AsNoTracking().ToListAsync();
         return entities.Select(MapToDomain).ToList();
     }
 
     public async Task<List<GitHubRepo>> GetAllReposAsync()
     {
         var entities = await _gitHubDbContext.Repos
+            .AsNoTracking()
             .Include(e => e.Owner)
             .ToListAsync();
         

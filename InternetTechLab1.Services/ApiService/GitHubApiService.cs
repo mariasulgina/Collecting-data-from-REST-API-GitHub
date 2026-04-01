@@ -38,14 +38,7 @@ public class GitHubApiService : IGitHubApiService
 
             gitHubInformation = await _httpClient.GetFromJsonAsync<T>(endpoint, cts.Token);
 
-            if (gitHubInformation != null)
-            {
-                await _logger.WriteLogToFileAsync($"[GitHubAPI] Ответ от {endpoint} успешно получен и десериализован");
-            }
-            else
-            {
-                await _logger.WriteLogToFileAsync($"[GitHubAPI] Предупреждение: API вернул пустой результат (null) для {endpoint}");
-            }
+            return gitHubInformation;
         }
         catch (OperationCanceledException)
         {
@@ -54,15 +47,13 @@ public class GitHubApiService : IGitHubApiService
         }
         catch (HttpRequestException ex)
         {
-            await _logger.WriteLogToFileAsync($"[Error] Сетевая ошибка при запросе к ({endpoint}): {ex.Message}");
-            throw new Exception($"Ошибка сети: Проверьте подключение к интернету ({ex.Message})");
+            await _logger.WriteLogToFileAsync($"[Error] Адресат не найден ({endpoint}): {ex.Message}");
+            throw new Exception($"Адресат не найден");
         } 
         catch (Exception ex)
         {
             await _logger.WriteLogToFileAsync($"[Error] Непредвиденная ошибка API ({endpoint}): {ex.Message}");
             throw new Exception($"Ошибка API: {ex.Message}");
         }
-
-        return gitHubInformation;
     }
 }
