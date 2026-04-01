@@ -3,73 +3,55 @@ using InternetTechLab1.Core.Models;
 using System.Text.Json;
 using System.IO;
 using InternetTechLab1.Core.Interfaces;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace InternetTechLab1.Data;
 
 public class ScrapingRepository : INonRelationalDatabaseService
 {
     private readonly ILoggerService _logger;
-
+    private readonly IMongoCollection<ScrapedItemEntity> _collection;
     private readonly NoSqlSettings settings = new();
-    private readonly string _path;
 
     public ScrapingRepository(ILoggerService logger)
     {
         _logger = logger;
-        _path = settings.FilePath;
+
+        var client = new MongoClient(settings.Uri);
+        var database = client.GetDatabase("scraped_data");
+        _collection = database.GetCollection<ScrapedItemEntity>("scraped_items");;
     }
     
     public async Task ClearDataBase()
     {
-        await File.WriteAllTextAsync(_path, "[]");
-        await _logger.WriteLogToFile($"[NoSQL] База данных (файл {_path}) успешно очищена");
+        await _collection.DeleteManyAsync(_ => true);
+        await _logger.WriteLogToFile($"[NoSQL] База данных успешно очищена");
     }
 
     public async Task SaveScrapeResults(IEnumerable<ScrapedItem> results)
     {
-        List<ScrapedItemEntity> allResults = new List<ScrapedItemEntity>();
+        int addedCount = 0;
 
-        if (File.Exists(_path))
+        if (results != null)
         {
-            string existingJson = await File.ReadAllTextAsync(_path);
-            var oldItems = JsonSerializer.Deserialize<List<ScrapedItemEntity>>(existingJson);
-            
-            if (oldItems != null)
-            {
-                allResults.AddRange(oldItems);
-            }
+            var entities = results.Select(MapToEntity).ToList();
+            await _collection.InsertManyAsync(entities);
+            addedCount = entities.Count;
         }
 
-        allResults.AddRange(results.Select(MapToEntity));
-
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string jsonContent = JsonSerializer.Serialize(allResults, options);
-
-        await File.WriteAllTextAsync(_path, jsonContent);
-        await _logger.WriteLogToFile($"[NoSQL] Сохранено {results.Count()} новых записей в {_path}. Всего записей: {allResults.Count}");
+        long count = await _collection.CountDocumentsAsync(_ => true);
+        await _logger.WriteLogToFile($"[NoSQL] Добавлено: {addedCount}");
     }
 
     public async Task<IEnumerable<ScrapedItem>> GetAllWebScrapResults()
     {
-        IEnumerable<ScrapedItem> result = Enumerable.Empty<ScrapedItem>();
+        var entities = await _collection.Find(_ => true).ToListAsync();
+        var results = entities.Select(MapToDomain).ToList();
 
-        if (File.Exists(_path))
-        {
-            string jsonContent = await File.ReadAllTextAsync(_path);
-            var entities = JsonSerializer.Deserialize<List<ScrapedItemEntity>>(jsonContent);
-        
-            if (entities != null)
-            {
-                result = entities.Select(MapToDomain).ToList();
-                await _logger.WriteLogToFile($"[NoSQL] Успешно прочитано {result.Count()} записей из файла");
-            }
-        }
-        else
-        {
-            await _logger.WriteLogToFile($"[Error] Ошибка при чтении NoSQL");
-        }
+        await _logger.WriteLogToFile($"[NoSQL] Прочитано из базы: {results.Count} записей");
 
-        return result;
+        return results;
     }
 
     private ScrapedItemEntity MapToEntity(ScrapedItem item) => new()

@@ -1,10 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 public class ScrapedItemEntity
 {
-    [Key]
-    public int Id { get; set; } 
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; } 
     
     public string Url { get; set; } = string.Empty;
     public string DataType { get; set; } = "Unknown";
