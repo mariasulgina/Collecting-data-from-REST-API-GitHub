@@ -14,7 +14,7 @@ class Program
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        FileLogger loggerService = new FileLogger();
+        FileLogger loggerService = new FileLogger(configuration);
 
         //1 слой
         GitHubApiService api = new GitHubApiService(loggerService);
