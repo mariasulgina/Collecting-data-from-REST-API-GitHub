@@ -18,7 +18,7 @@ class Program
 
         //1 слой
         GitHubApiService api = new GitHubApiService(loggerService);
-        GitHubRepository gitHubDb = new GitHubRepository(loggerService);
+        GitHubRepository gitHubDb = new GitHubRepository(loggerService, configuration);
         ScrapingRepository scrapingDb = new ScrapingRepository(loggerService, configuration);
 
         //2 слой

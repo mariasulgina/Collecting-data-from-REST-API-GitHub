@@ -1,21 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using InternetTechLab1.Data.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace InternetTechLab1.Data;
 
 public class GitHubDbContext : DbContext
 {
+    private readonly IConfiguration _configuration;
+
     public DbSet<GitHubRepoEntity> Repos { get; set; }
     public DbSet<GitHubUserEntity> Users { get; set; }
 
-    public GitHubDbContext()
+    public GitHubDbContext(IConfiguration configuration)
     {
+        _configuration = configuration;
         Database.EnsureCreated();
     } 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=github_lab.db");
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlite(connectionString);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

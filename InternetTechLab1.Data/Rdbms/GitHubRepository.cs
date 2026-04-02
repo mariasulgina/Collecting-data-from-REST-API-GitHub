@@ -3,17 +3,22 @@ using InternetTechLab1.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using static System.Console;
 using InternetTechLab1.Core.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace InternetTechLab1.Data;
 
 public class GitHubRepository : IRelationalDatabaseService
 {
-    private readonly GitHubDbContext _gitHubDbContext = new();
+    private readonly IConfiguration _configuration;
+    private readonly GitHubDbContext _gitHubDbContext;
     private readonly ILoggerService _logger;
 
-    public GitHubRepository(ILoggerService logger)
+    public GitHubRepository(ILoggerService logger, IConfiguration configuration)
     {
         _logger = logger;
+        _configuration = configuration;
+
+        _gitHubDbContext = new GitHubDbContext(_configuration);
     }
 
     public async Task SaveApiGitHubUserInformationAsync(GitHubUser user) 
