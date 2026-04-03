@@ -5,6 +5,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Фабрика для создания объектов команд на основе выбора пользователя в меню.
+/// Реализует централизованное управление зависимостями, знает, какие «инструменты» (сервисы) нужны каждой команде для работы.
+/// </summary>
 public class CommandFactory
 {
     private readonly IVisualizerService _visualizer;
@@ -24,6 +28,9 @@ public class CommandFactory
         _loggerService = loggerService;
     }
 
+    /// <summary>
+    /// Создает и возвращает соответствующую команду на основе индексов главного и подменю.
+    /// </summary>
     public ICommand? CreateCommand(int mainChoice, int subChoice)
     {
         return (mainChoice, subChoice) switch

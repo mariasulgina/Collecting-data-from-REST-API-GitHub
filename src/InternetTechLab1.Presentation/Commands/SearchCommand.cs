@@ -5,12 +5,19 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для поиска данных о пользователе и его репозиториях в локальной базе данных.
+/// </summary>
 public class SearchCommand : GetGitHubInformationCommandBase
 {
     public SearchCommand(IGitHubService gitHubService, 
     IVisualizerService visualizerService, ILoggerService logger)
     : base(gitHubService, visualizerService, logger) { }
 
+    /// <summary>
+    /// Выполняет поиск по локальным данным. Логика разделена на 4 состояния:
+    /// Полный успех, наличие только профиля, наличие только репозиториев, или отсутствие данных.
+    /// </summary>
     protected override async Task ExecuteGitHubLogicAsync(string username)
     {
         await _logger.WriteLogToFileAsync($"[UI] Запрос пользователя {username} и списка его репозиториев");

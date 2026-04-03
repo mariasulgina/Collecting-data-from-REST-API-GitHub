@@ -11,6 +11,9 @@ public class MenuService
     private readonly CommandFactory _factory;
     private readonly ILoggerService _logger;
 
+    /// <summary>
+    /// Инициализирует структуру меню.
+    /// </summary>
     public MenuService(CommandFactory factory, ILoggerService logger)
     {
         _factory = factory;
@@ -30,6 +33,10 @@ public class MenuService
         };
     }
 
+    /// <summary>
+    /// Запускает основной цикл работы приложения.
+    /// Обрабатывает переходы между главным и вложенными меню.
+    /// </summary>
     public async Task RunAsync() 
     {
         await _logger.WriteLogToFileAsync("[System] Приложение запущено. Главное меню");
@@ -97,6 +104,9 @@ public class MenuService
         }
     }
 
+    /// <summary>
+    /// Отрисовывает интерактивное меню с поддержкой навигации стрелками.
+    /// </summary>
     private int ShowMenu(List<string> stringItems)
     {
         foreach (var item in stringItems) 

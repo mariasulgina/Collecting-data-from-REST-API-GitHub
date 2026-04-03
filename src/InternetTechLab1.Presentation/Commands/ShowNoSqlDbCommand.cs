@@ -3,6 +3,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для отображения данных из NoSQL хранилища (результаты веб-скрапинга).
+/// Читает данные из JSON-файла и выводит их через сервис визуализации.
+/// </summary>
 public class ShowNoSqlDbCommand : ICommand
 {
     private readonly IScrapingService _service;
@@ -16,6 +20,9 @@ public class ShowNoSqlDbCommand : ICommand
         _logger = logger;
     }
 
+    /// <summary>
+    /// Выполняет асинхронное чтение NoSQL базы и инициирует визуализацию.
+    /// </summary>
     public async Task ExecuteAsync() 
     {
         try 

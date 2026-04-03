@@ -5,12 +5,19 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для получения, сохранения и отображения списка публичных репозиториев пользователя GitHub.
+/// </summary>
 public class GetReposCommand : GetGitHubInformationCommandBase
 {
     public GetReposCommand(IGitHubService gitHubService, 
     IVisualizerService visualizerService, ILoggerService logger)
     : base(gitHubService, visualizerService, logger) { }
 
+    /// <summary>
+    /// Реализует логику запроса репозиториев. 
+    /// Проверяет наличие данных и передает их в визуализатор при успехе.
+    /// </summary>
     protected override async Task ExecuteGitHubLogicAsync(string username)
     {
         await _logger.WriteLogToFileAsync($"[UI] Запрос списка репозиториев для пользователя: {username}");
@@ -25,7 +32,6 @@ public class GetReposCommand : GetGitHubInformationCommandBase
         } else
         {
             await _logger.WriteLogToFileAsync($"[UI] Репозитории для {username} не найдены или API вернул пустой список");
-
             Console.WriteLine($"У пользователя {username} репозитории не найдены");
         }
     }

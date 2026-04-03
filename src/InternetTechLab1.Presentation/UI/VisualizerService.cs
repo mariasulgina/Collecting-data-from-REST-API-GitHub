@@ -6,9 +6,14 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.UI;
 
+/// <summary>
+/// Сервис для красивой визуализации данных в консольном интерфейсе.
+/// </summary>
 public class VisualizerService : IVisualizerService
 {
-    //try
+    /// <summary>
+    /// Отображает детальную информацию о конкретном пользователе GitHub.
+    /// </summary>
     public void ShowGitHubUser(GitHubUser user) 
     {
         Clear();
@@ -18,6 +23,9 @@ public class VisualizerService : IVisualizerService
         ConsoleStyler.PrintIndentation();
     }
 
+    /// <summary>
+    /// Вспомогательный метод для вывода текстовых полей профиля пользователя.
+    /// </summary>
     private void ShowGitHubUserInformation(GitHubUser user) 
     {
         Console.WriteLine($" Имя: {user.Name ?? "Не указано"}");
@@ -29,6 +37,9 @@ public class VisualizerService : IVisualizerService
         Console.WriteLine($" GitHub URL: {user.HtmlUrl}");
     }
 
+    /// <summary>
+    /// Выводит список подписчиков указанного пользователя.
+    /// </summary>
     public void ShowGitHubFollowers(List<GitHubUser> followers, string username)
     {
         Clear();
@@ -45,6 +56,9 @@ public class VisualizerService : IVisualizerService
         ConsoleStyler.PrintIndentation();
     }
 
+    /// <summary>
+    /// Отображает список репозиториев GitHub.
+    /// </summary>
     public void ShowGitHubRepos(List<GitHubRepo> repos)
     {
         Clear();
@@ -55,6 +69,9 @@ public class VisualizerService : IVisualizerService
         ConsoleStyler.PrintIndentation();
     }
 
+    /// <summary>
+    /// Вспомогательный метод для циклического вывода информации о каждом репозитории.
+    /// </summary>
     private void ShowGitHubReposInformation(List<GitHubRepo> repos) 
     {
         foreach (var repo in repos)
@@ -68,6 +85,11 @@ public class VisualizerService : IVisualizerService
         }
     }
 
+    /// <summary>
+    /// Универсальный метод для отображения данных из базы данных с использованием рефлексии, 
+    /// то есть вытаскиваем нужные свойства из объектов, чтобы узнать, что за класс перед нами.
+    /// Выводит только строковые и целочисленные свойства объектов.
+    /// </summary>
     public void ShowDb<T>(IEnumerable<T> data) where T : class
     {
         var dataList = data.ToList();
@@ -91,12 +113,15 @@ public class VisualizerService : IVisualizerService
                         dataForElem += $"{ConsoleStyler.Bold}{property.Name}{ConsoleStyler.Reset}: {property.GetValue(elem) ?? "null"} | ";
                     }
                 }
-                Console.WriteLine($"  → {dataForElem}");
+                Console.WriteLine($"  -> {dataForElem}");
                 ConsoleStyler.PrintIndentation();
             }
         }
     }
 
+    /// <summary>
+    /// Выводит результаты веб-скрапинга, сгруппированные по типу данных.
+    /// </summary>
     public void ShowScrapeResults(IEnumerable<ScrapedItem> results)
     {
         if (results == null || !results.Any())
@@ -119,11 +144,17 @@ public class VisualizerService : IVisualizerService
         }
     }
 
+    /// <summary>
+    /// Отображает данные из NoSQL базы данных (использует логику отображения результатов скрапинга).
+    /// </summary>
     public void ShowNoSqlDb(IEnumerable<ScrapedItem> results)
     {
         ShowScrapeResults(results);
     }
 
+    /// <summary>
+    /// Комплексный метод для одновременного отображения профиля пользователя и его репозиториев.
+    /// </summary>
     public void ShowGitHubUserAndHisRepos(GitHubUser user, List<GitHubRepo> repos)
     {
         Clear();

@@ -2,6 +2,9 @@
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для полной очистки всех баз данных (реляционной и NoSQL).
+/// </summary>
 public class ClearDbCommand : ICommand
 {
     private readonly IService _service;
@@ -13,6 +16,9 @@ public class ClearDbCommand : ICommand
         _logger = logger;
     }
 
+    /// <summary>
+    /// Выполняет логику очистки данных. 
+    /// </summary>
     public async Task ExecuteAsync() 
     {
         try 
@@ -22,13 +28,11 @@ public class ClearDbCommand : ICommand
             await _service.ClearAllDataAsync();
 
             await _logger.WriteLogToFileAsync("[Database] База данных успешно очищена");
-            
             Console.WriteLine("База данных успешно очищена");
         }
         catch (Exception ex)
         {
             await _logger.WriteLogToFileAsync($"[Fatal Error] Не удалось очистить базу данных: {ex.Message}");
-            
             Console.WriteLine($"Ошибка при очистке базы: {ex.Message}");
         }
     }

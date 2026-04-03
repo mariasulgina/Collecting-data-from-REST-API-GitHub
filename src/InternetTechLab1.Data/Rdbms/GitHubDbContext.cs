@@ -8,6 +8,9 @@ public class GitHubDbContext : DbContext
 {
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// Набор данных - таблицы для хранения информации о репозиториях и пользователях GitHub.
+    /// </summary>
     public DbSet<GitHubRepoEntity> Repos { get; set; }
     public DbSet<GitHubUserEntity> Users { get; set; }
 
@@ -17,6 +20,9 @@ public class GitHubDbContext : DbContext
         Database.EnsureCreated();
     } 
 
+    /// <summary>
+    /// Настройка параметров подключения к базе данных. Используется SQLite.
+    /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -26,6 +32,10 @@ public class GitHubDbContext : DbContext
         }
     }
 
+    /// <summary>
+    /// Описание связей между сущностями с помощью Fluent API.
+    /// Настраивает связи "один-ко-многим" (репозитории) и рекурсивную связь "многие-ко-многим" (подписчики).
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GitHubRepoEntity>()
@@ -40,6 +50,9 @@ public class GitHubDbContext : DbContext
             .UsingEntity(j => j.ToTable("UserFollowers"));
     }
 
+    /// <summary>
+    /// Универсальный асинхронный метод для добавления или обновления записи в базе данных.
+    /// </summary>
     public async Task AddAsync<T>(T model) where T : class 
     {
         var id = typeof(T).GetProperty("Id")?.GetValue(model);
@@ -54,7 +67,7 @@ public class GitHubDbContext : DbContext
             } 
             else
             {
-                //если объект уже есть в памяти контекста, говорим EF не пытаться вставлять его или его связи снова
+                // Если объект уже есть в памяти контекста, говорим EF не пытаться вставлять его или его связи снова.
                 this.Entry(existing).State = EntityState.Detached; 
                 this.Set<T>().Attach(model);
                 this.Entry(model).State = EntityState.Modified;

@@ -5,6 +5,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для выполнения веб-скрапинга по указанному URL-адресу.
+/// Извлекает данные с веб-страницы, сохраняет их и передает на визуализацию.
+/// </summary>
 public class WebScrapingCommand : ICommand
 {
     protected readonly IScrapingService _service;
@@ -18,6 +22,10 @@ public class WebScrapingCommand : ICommand
         _logger = logger;
     }
 
+    /// <summary>
+    /// Основной цикл выполнения команды: запрос URL у пользователя, 
+    /// обработка различных сетевых исключений и связанных с неверным адресом.
+    /// </summary>
     public async Task ExecuteAsync() 
     {
         Console.Write("Введите URL: ");

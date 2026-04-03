@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace InternetTechLab1.Data;
 
+/// <summary>
+/// Репозиторий для управления данными GitHub в реляционной базе данных SQLite.
+/// </summary>
 public class GitHubRepository : IRelationalDatabaseService
 {
     private readonly IConfiguration _configuration;
@@ -21,6 +24,10 @@ public class GitHubRepository : IRelationalDatabaseService
         _gitHubDbContext = new GitHubDbContext(_configuration);
     }
 
+    /// <summary>
+    /// Сохраняет или обновляет информацию о пользователе GitHub в базе данных.
+    /// Перед сохранением очищается трекер состояний EF для предотвращения конфликтов.
+    /// </summary>
     public async Task SaveApiGitHubUserInformationAsync(GitHubUser user) 
     {
         _gitHubDbContext.ChangeTracker.Clear();
@@ -39,6 +46,10 @@ public class GitHubRepository : IRelationalDatabaseService
         await _logger.WriteLogToFileAsync($"[Database] Пользователь {user.Login} успешно добавлен в очередь сохранения");
     }
 
+    /// <summary>
+    /// Сохраняет список репозиториев пользователя. 
+    /// Для каждого репозитория проверяется его наличие в БД по ID.
+    /// </summary>
     public async Task SaveApiGitHubReposInformationAsync(List<GitHubRepo> repos)
     {
         _gitHubDbContext.ChangeTracker.Clear();
@@ -60,6 +71,9 @@ public class GitHubRepository : IRelationalDatabaseService
         await _logger.WriteLogToFileAsync($"[Database] {repos.Count} репозиториев добавлены в очередь сохранения");
     }
 
+    /// <summary>
+    /// Сохраняет список подписчиков как сущностей пользователей.
+    /// </summary>
     public async Task SaveApiGitHubFollowersInformationAsync(List<GitHubUser> followers)
     {
         _gitHubDbContext.ChangeTracker.Clear();
@@ -81,12 +95,18 @@ public class GitHubRepository : IRelationalDatabaseService
         await _logger.WriteLogToFileAsync($"[Database] {followers.Count} фолловеров добавлены в очередь сохранения");
     }
 
+    /// <summary>
+    /// Извлекает всех пользователей из базы данных.
+    /// </summary>
     public async Task<List<GitHubUser>> GetAllUsersAsync() 
     {
         var entities = await _gitHubDbContext.Users.AsNoTracking().ToListAsync();
         return entities.Select(MapToDomain).ToList();
     }
 
+    /// <summary>
+    /// Извлекает все репозитории вместе с информацией об их владельцах.
+    /// </summary>
     public async Task<List<GitHubRepo>> GetAllReposAsync()
     {
         var entities = await _gitHubDbContext.Repos
@@ -97,13 +117,20 @@ public class GitHubRepository : IRelationalDatabaseService
         return entities.Select(MapToDomain).ToList();
     }
 
+    /// <summary>
+    /// Полностью очищает таблицы репозиториев и пользователей в БД.
+    /// </summary>
     public async Task ClearDataBaseAsync()
     {
         await _gitHubDbContext.Repos.ExecuteDeleteAsync();
         await _gitHubDbContext.Users.ExecuteDeleteAsync();
+
         await _logger.WriteLogToFileAsync("[Database] База данных успешно очищена");
     }
 
+    /// <summary>
+    /// Поиск пользователя в базе данных по его логину без учета регистра.
+    /// </summary>
     public async Task<GitHubUser?> GetUserByLoginAsync(string username)
     {
         var entity = await _gitHubDbContext.Users
@@ -112,6 +139,9 @@ public class GitHubRepository : IRelationalDatabaseService
         return entity == null ? null : MapToDomain(entity);
     }
 
+    /// <summary>
+    /// Получение всех репозиториев, принадлежащих конкретному пользователю по его логину.
+    /// </summary>
     public async Task<List<GitHubRepo>?> GetReposByLoginUserAsync(string username)
     {
         var entities = await _gitHubDbContext.Repos

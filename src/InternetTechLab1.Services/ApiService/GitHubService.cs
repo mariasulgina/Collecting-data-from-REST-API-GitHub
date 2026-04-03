@@ -4,6 +4,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Services;
 
+/// <summary>
+/// Сервис бизнес-логики для работы с данными GitHub.
+/// Осуществляет взаимодействие между API-клиентом и базой данных.
+/// </summary>
 public class GitHubService : IGitHubService
 {
     private readonly IGitHubApiService _apiClient;
@@ -17,6 +21,9 @@ public class GitHubService : IGitHubService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Получает данные пользователя из API GitHub и сохраняет их в локальную базу данных.
+    /// </summary>
     public async Task<GitHubUser?> GetAndSaveUserAsync(string username)
     {
         var user = new GitHubUser();
@@ -41,6 +48,9 @@ public class GitHubService : IGitHubService
         return user;
     }
 
+    /// <summary>
+    /// Запрашивает список подписчиков пользователя из API и сохраняет их в базу данных.
+    /// </summary>
     public async Task<List<GitHubUser>?> GetAndSaveFollowersAsync(string username)
     {
         var followers = new List<GitHubUser>();
@@ -65,6 +75,9 @@ public class GitHubService : IGitHubService
         return followers;
     }
 
+    /// <summary>
+    /// Запрашивает список публичных репозиториев пользователя из API и сохраняет их в базу данных.
+    /// </summary>
     public async Task<List<GitHubRepo>?> GetAndSaveReposAsync(string username)
     {
         var repos = new List<GitHubRepo>();
@@ -89,36 +102,54 @@ public class GitHubService : IGitHubService
         return repos;
     }
 
+    /// <summary>
+    /// Ищет информацию о пользователе в локальной базе данных.
+    /// </summary>
     public async Task<GitHubUser?> GetUserByLoginAsync(string username)
     {
         GitHubUser? user = await _database.GetUserByLoginAsync(username);
         return user;
     }
 
+    /// <summary>
+    /// Получает список репозиториев пользователя, ранее сохраненных в базе данных.
+    /// </summary>
     public async Task<List<GitHubRepo>?> GetReposByLoginUserAsync(string username)
     {
         List<GitHubRepo>? repos = await _database.GetReposByLoginUserAsync(username);
         return repos;
     }
 
+    /// <summary>
+    /// Полностью очищает все таблицы, связанные с GitHub, в локальной базе данных.
+    /// </summary>
     public async Task ClearAllDataAsync() 
     {
         await _logger.WriteLogToFileAsync("[GitHubService] Очистка SQL базы...");
         await _database.ClearDataBaseAsync();
     }
 
+    /// <summary>
+    /// Извлекает всех пользователей, когда-либо сохраненных в локальную базу данных.
+    /// </summary>
     public async Task<IEnumerable<GitHubUser>> GetSavedUsersAsync()
     {
         await _logger.WriteLogToFileAsync("[GitHubService] Чтение всех пользователей из SQL...");
         return await _database.GetAllUsersAsync(); 
     }
 
+    /// <summary>
+    /// Извлекает все репозитории, сохраненные в локальную базу данных.
+    /// </summary>
     public async Task<IEnumerable<GitHubRepo>> GetSavedReposAsync()
     {
         await _logger.WriteLogToFileAsync("[GitHubService] Чтение всех репозиториев из SQL...");
         return await _database.GetAllReposAsync();
     }
 
+    /// <summary>
+    /// Преобразует объект передачи данных (DTO) в доменную модель пользователя.
+    /// </summary>
     private GitHubUser MapToDomainUser(GitHubUserDto dto) => new()
     {
         Id = dto.Id,
@@ -135,6 +166,9 @@ public class GitHubService : IGitHubService
         Email = dto.Email
     };
 
+    /// <summary>
+    /// Преобразует объект передачи данных (DTO) в доменную модель репозитория.
+    /// </summary>
     private GitHubRepo MapToDomainRepo(GitHubRepoDto dto) 
     {
         return new GitHubRepo 

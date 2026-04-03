@@ -5,29 +5,52 @@ using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using InternetTechLab1.Core.Models;
 using InternetTechLab1.Core.Interfaces;
+using InternetTechLab1.Core.Settings;
 
 namespace InternetTechLab1.Services;
 
+/// <summary>
+/// Сервис для выполнения веб-скрапинга (извлечения данных из HTML).
+/// Позволяет получать заголовки, ссылки, мета-описания и текстовое содержимое страниц.
+/// </summary>
 public class ScrapingService : IScrapingService
 {
     private readonly INonRelationalDatabaseService _database;
     private readonly ILoggerService _logger;
+    private readonly ScrapingSettings _settings;
 
-    private static readonly int _defaultTimeoutSeconds = 50;
+    /// <summary>
+    /// Статический клиент HttpClient для выполнения HTTP-запросов.
+    /// Настраивается один раз при первой инициализации сервиса.
+    /// </summary>
     private static readonly HttpClient _httpClient = new HttpClient();
+    private static readonly object _lock = new object();
+    private static bool _isInitialized = false;
 
-    public ScrapingService(INonRelationalDatabaseService database, ILoggerService logger)
+    public ScrapingService(INonRelationalDatabaseService database, ILoggerService logger, ScrapingSettings settings)
     {
         _database = database;
         _logger = logger;
+        _settings = settings;
 
-        if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
+        // Безопасная настройка заголовков и таймаута
+        if (!_isInitialized)
         {
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "InternetTechLab1-App");
+            lock (_lock)
+            {
+                if (!_isInitialized)
+                {
+                    _httpClient.DefaultRequestHeaders.Add("User-Agent", _settings.UserAgent);
+                    _httpClient.Timeout = TimeSpan.FromSeconds(_settings.TimeoutSeconds);
+                    _isInitialized = true;
+                }
+            }
         }
-        _httpClient.Timeout = TimeSpan.FromSeconds(_defaultTimeoutSeconds);
     }
 
+    /// <summary>
+    /// Выполняет HTTP-запрос по указанному URL и извлекает структурированную информацию из HTML-документа.
+    /// </summary>
     public async Task<IEnumerable<ScrapedItem>?> GetFromURLWebScrapingInformationAsync(string url)
     {
         try 
@@ -64,7 +87,7 @@ public class ScrapingService : IScrapingService
         }
         catch (TaskCanceledException)
         {
-            throw new Exception($"Превышено время ожидания ({_defaultTimeoutSeconds} сек). Сайт слишком долго не отвечает");
+            throw new Exception($"Превышено время ожидания ({_settings.TimeoutSeconds} сек). Сайт слишком долго не отвечает");
         }
         catch (Exception ex)
         {
@@ -73,18 +96,27 @@ public class ScrapingService : IScrapingService
         }
     }
 
+    /// <summary>
+    /// Полностью очищает все накопленные результаты скрапинга в NoSQL хранилище.
+    /// </summary>
     public async Task ClearAllDataAsync() 
     {
         await _logger.WriteLogToFileAsync("[ScrapingService] Очистка NoSQL базы...");
         await _database.ClearDataBaseAsync();
     }
 
+    /// <summary>
+    /// Извлекает все ранее сохраненные результаты скрапинга из базы данных.
+    /// </summary>
     public async Task<IEnumerable<ScrapedItem>> GetScrapedResultsAsync()
     {
         await _logger.WriteLogToFileAsync("[ScrapingService] Чтение результатов скрапинга из NoSQL...");
         return await _database.GetAllWebScrapResultsAsync();
     }
 
+    /// <summary>
+    /// Внутренний метод для разбора HTML-документа и поиска конкретных тегов (Title, H1, Links и т.д.).
+    /// </summary>
     private IEnumerable<ScrapedItem> GetScrapeResults(IHtmlDocument document)
     {
         List<ScrapedItem> scrapedItems = new();

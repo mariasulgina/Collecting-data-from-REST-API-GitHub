@@ -4,9 +4,14 @@ using InternetTechLab1.Core.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Configuration;
+using InternetTechLab1.Core.Settings;
 
 namespace InternetTechLab1.Data;
 
+/// <summary>
+/// Репозиторий для работы с нереляционной базой данных (MongoDB).
+/// Реализует методы сохранения и получения результатов веб-скрапинга.
+/// </summary>
 public class ScrapingRepository : INonRelationalDatabaseService
 {
     private readonly ILoggerService _logger;
@@ -34,12 +39,19 @@ public class ScrapingRepository : INonRelationalDatabaseService
         _collection = database.GetCollection<ScrapedItemEntity>("scraped_items");
     }
     
+    /// <summary>
+    /// Асинхронно очищает всю коллекцию в базе данных NoSQL.
+    /// </summary>
     public async Task ClearDataBaseAsync()
     {
         await _collection.DeleteManyAsync(_ => true);
         await _logger.WriteLogToFileAsync($"[NoSQL] База данных успешно очищена");
     }
 
+    /// <summary>
+    /// Сохраняет список результатов скрапинга в MongoDB.
+    /// Перед сохранением данные преобразуются из доменной модели в сущность базы данных.
+    /// </summary>
     public async Task SaveScrapeResultsAsync(IEnumerable<ScrapedItem> results)
     {
         int addedCount = 0;
@@ -55,6 +67,9 @@ public class ScrapingRepository : INonRelationalDatabaseService
         await _logger.WriteLogToFileAsync($"[NoSQL] Добавлено: {addedCount}");
     }
 
+    /// <summary>
+    /// Извлекает все сохраненные результаты скрапинга из базы данных.
+    /// </summary>
     public async Task<IEnumerable<ScrapedItem>> GetAllWebScrapResultsAsync()
     {
         var entities = await _collection.Find(_ => true).ToListAsync();

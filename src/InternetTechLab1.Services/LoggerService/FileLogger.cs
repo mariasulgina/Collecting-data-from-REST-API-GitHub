@@ -3,6 +3,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Services;
 
+/// <summary>
+/// Сервис для ведения логов в текстовый файл.
+/// Обеспечивает потокобезопасную запись сообщений с временными метками.
+/// </summary>
 public class FileLogger : ILoggerService
 {
     private readonly string _filePath;
@@ -13,6 +17,10 @@ public class FileLogger : ILoggerService
         _filePath = configuration["LoggingSettings:LogFilePath"] ?? "log.txt";
     }
 
+    /// <summary>
+    /// Асинхронно записывает сообщение в лог-файл.
+    /// Каждая запись сопровождается текущей датой и временем.
+    /// </summary>
     public async Task WriteLogToFileAsync(string message)
     {
         string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] -- {message} -- {Environment.NewLine}";

@@ -3,6 +3,10 @@ using InternetTechLab1.Core.Interfaces;
 
 namespace InternetTechLab1.Commands;
 
+/// <summary>
+/// Команда для отображения всего содержимого локальной реляционной базы данных (GitHub пользователи и репозитории).
+/// Используется для проверки сохраненных данных без выполнения API-запросов.
+/// </summary>
 public class ShowDbCommand : ICommand
 {
     private readonly IGitHubService _service;
@@ -16,6 +20,9 @@ public class ShowDbCommand : ICommand
         _logger = logger;
     }
 
+    /// <summary>
+    /// Выполняет последовательное чтение всех таблиц (пользователи, затем репозитории) и передает их в визуализатор.
+    /// </summary>
     public async Task ExecuteAsync() 
     {
         try 
