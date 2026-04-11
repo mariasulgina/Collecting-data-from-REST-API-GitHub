@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Configuration;
 using InternetTechLab1.Core.Settings;
+using InternetTechLab1.Data.Mappers;
 
 namespace InternetTechLab1.Data;
 
@@ -58,7 +59,7 @@ public class ScrapingRepository : INonRelationalDatabaseService
 
         if (results != null)
         {
-            var entities = results.Select(MapToEntity).ToList();
+            var entities = results.Select(e => e.MapToEntity()).ToList();
             await _collection.InsertManyAsync(entities);
             addedCount = entities.Count;
         }
@@ -73,23 +74,10 @@ public class ScrapingRepository : INonRelationalDatabaseService
     public async Task<IEnumerable<ScrapedItem>> GetAllWebScrapResultsAsync()
     {
         var entities = await _collection.Find(_ => true).ToListAsync();
-        var results = entities.Select(MapToDomain).ToList();
+        var results = entities.Select(e => e.MapToDomain()).ToList();
 
         await _logger.WriteLogToFileAsync($"[NoSQL] Прочитано из базы: {results.Count} записей");
 
         return results;
     }
-
-    private ScrapedItemEntity MapToEntity(ScrapedItem item) => new()
-    {
-        Url = item.Url,
-        DataType = item.DataType,
-        Value = item.Value
-    };
-
-    private ScrapedItem MapToDomain(ScrapedItemEntity entity) => new(
-        entity.Url,
-        entity.DataType,
-        entity.Value
-    );
 }

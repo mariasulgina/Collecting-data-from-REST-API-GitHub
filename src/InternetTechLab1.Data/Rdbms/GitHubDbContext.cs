@@ -17,8 +17,12 @@ public class GitHubDbContext : DbContext
     public GitHubDbContext(IConfiguration configuration)
     {
         _configuration = configuration;
-        Database.EnsureCreated();
     } 
+
+    public void ApplyMigrations()
+    {
+        Database.Migrate();
+    }
 
     /// <summary>
     /// Настройка параметров подключения к базе данных. Используется SQLite.

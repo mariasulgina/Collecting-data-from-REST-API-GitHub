@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using static System.Console;
 using InternetTechLab1.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+using InternetTechLab1.Data.Mappers;
 
 namespace InternetTechLab1.Data;
 
@@ -34,7 +35,7 @@ public class GitHubRepository : IRelationalDatabaseService
 
         var existing = await _gitHubDbContext.Users.AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == user.Id);
-        var entity = MapToEntity(user);
+        var entity = user.MapToEntity();
 
         if (existing == null) {
             await _gitHubDbContext.Users.AddAsync(entity);
@@ -56,7 +57,7 @@ public class GitHubRepository : IRelationalDatabaseService
 
         foreach(var repo in repos)
         {
-            var entity = MapToEntity(repo);
+            var entity = repo.MapToEntity();
             var existing = await _gitHubDbContext.Repos.AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == repo.Id);
 
@@ -80,7 +81,7 @@ public class GitHubRepository : IRelationalDatabaseService
 
         foreach (var follower in followers)
         {
-            var entity = MapToEntity(follower);
+            var entity = follower.MapToEntity();
             var existing = await _gitHubDbContext.Users.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == follower.Id);
 
@@ -101,7 +102,7 @@ public class GitHubRepository : IRelationalDatabaseService
     public async Task<List<GitHubUser>> GetAllUsersAsync() 
     {
         var entities = await _gitHubDbContext.Users.AsNoTracking().ToListAsync();
-        return entities.Select(MapToDomain).ToList();
+        return entities.Select(e => e.MapToDomain()).ToList();
     }
 
     /// <summary>
@@ -114,7 +115,7 @@ public class GitHubRepository : IRelationalDatabaseService
             .Include(e => e.Owner)
             .ToListAsync();
         
-        return entities.Select(MapToDomain).ToList();
+        return entities.Select(e => e.MapToDomain()).ToList();
     }
 
     /// <summary>
@@ -136,7 +137,7 @@ public class GitHubRepository : IRelationalDatabaseService
         var entity = await _gitHubDbContext.Users
             .FirstOrDefaultAsync(u => u.Login != null && u.Login.ToLower() == username.ToLower());
         
-        return entity == null ? null : MapToDomain(entity);
+        return entity == null ? null : entity.MapToDomain();
     }
 
     /// <summary>
@@ -149,66 +150,6 @@ public class GitHubRepository : IRelationalDatabaseService
             .Where(u => u.Owner != null && u.Owner.Login != null && u.Owner.Login.ToLower() == username.ToLower())
             .ToListAsync();
         
-        return entities.Select(MapToDomain).ToList();
+        return entities.Select(e => e.MapToDomain()).ToList();
     }
-
-    private GitHubUserEntity MapToEntity(GitHubUser user) => new()
-    {
-        Id = user.Id,
-        Login = user.Login,
-        AvatarUrl = user.AvatarUrl,
-        HtmlUrl = user.HtmlUrl,
-        Name = user.Name,
-        Company = user.Company,
-        Location = user.Location,
-        Bio = user.Bio,
-        PublicRepos = user.PublicRepos,
-        Followers = user.Followers,
-        Following = user.Following,
-        CreatedAt = user.CreatedAt,
-        Email = user.Email
-    };
-
-    private GitHubRepoEntity MapToEntity(GitHubRepo repo) => new()
-    {
-        Id = repo.Id,
-        Name = repo.Name,
-        FullName = repo.FullName,
-        Description = repo.Description,
-        HtmlUrl = repo.HtmlUrl,
-        IsPrivate = repo.IsPrivate,
-        Language = repo.Language,
-        StargazersCount = repo.StargazersCount,
-        ForksCount = repo.ForksCount,
-        CreatedAt = repo.CreatedAt,
-        OwnerId = repo.Owner?.Id 
-    };
-
-    private GitHubUser MapToDomain(GitHubUserEntity entity) => new()
-    {
-        Id = entity.Id,
-        Login = entity.Login,
-        Name = entity.Name,
-        AvatarUrl = entity.AvatarUrl,
-        Bio = entity.Bio,
-        Location = entity.Location,
-        Company = entity.Company,
-        PublicRepos = entity.PublicRepos,
-        Followers = entity.Followers,
-        Following = entity.Following,
-        CreatedAt = entity.CreatedAt,
-        Email = entity.Email
-    };
-
-    private GitHubRepo MapToDomain(GitHubRepoEntity entity) => new()
-    {
-        Id = entity.Id,
-        Name = entity.Name,
-        FullName = entity.FullName,
-        Description = entity.Description,
-        Language = entity.Language,
-        StargazersCount = entity.StargazersCount,
-        ForksCount = entity.ForksCount,
-        Owner = entity.Owner != null ? MapToDomain(entity.Owner) : null
-    };
 }

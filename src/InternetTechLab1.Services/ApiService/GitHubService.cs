@@ -1,6 +1,7 @@
 using InternetTechLab1.Services.Models;
 using InternetTechLab1.Core.Models;
 using InternetTechLab1.Core.Interfaces;
+using InternetTechLab1.Services.Mappers;
 
 namespace InternetTechLab1.Services;
 
@@ -35,7 +36,7 @@ public class GitHubService : IGitHubService
 
         if (userDto != null)
         {
-            user = MapToDomainUser(userDto);
+            user = userDto.MapToDomainUser();
 
             await _logger.WriteLogToFileAsync($"[GitHubService] Данные {username} получены. Сохранение в БД...");
             await _database.SaveApiGitHubUserInformationAsync(user);
@@ -62,7 +63,7 @@ public class GitHubService : IGitHubService
 
         if (followersDto != null && followersDto.Count > 0)
         {
-            followers = followersDto.Select(user => MapToDomainUser(user)).ToList();
+            followers = followersDto.Select(dto => dto.MapToDomainUser()).ToList();
 
             await _logger.WriteLogToFileAsync($"[GitHubService] Получено {followers.Count} фолловеров для {username}. Сохранение...");
             await _database.SaveApiGitHubFollowersInformationAsync(followers); 
@@ -89,7 +90,7 @@ public class GitHubService : IGitHubService
 
         if (reposDto != null && reposDto.Count > 0)
         {
-            repos = reposDto.Select(repo => MapToDomainRepo(repo)).ToList();
+            repos = reposDto.Select(dto => dto.MapToDomainRepo()).ToList();
 
             await _logger.WriteLogToFileAsync($"[GitHubService] Получено {repos.Count} репозиториев для {username}. Сохранение...");
             await _database.SaveApiGitHubReposInformationAsync(repos);
@@ -145,42 +146,5 @@ public class GitHubService : IGitHubService
     {
         await _logger.WriteLogToFileAsync("[GitHubService] Чтение всех репозиториев из SQL...");
         return await _database.GetAllReposAsync();
-    }
-
-    /// <summary>
-    /// Преобразует объект передачи данных (DTO) в доменную модель пользователя.
-    /// </summary>
-    private GitHubUser MapToDomainUser(GitHubUserDto dto) => new()
-    {
-        Id = dto.Id,
-        Login = dto.Login,
-        Name = dto.Name,
-        AvatarUrl = dto.AvatarUrl,
-        Bio = dto.Bio,
-        Location = dto.Location,
-        Company = dto.Company,
-        PublicRepos = dto.PublicRepos,
-        Followers = dto.Followers,
-        Following = dto.Following,
-        CreatedAt = dto.CreatedAt,
-        Email = dto.Email
-    };
-
-    /// <summary>
-    /// Преобразует объект передачи данных (DTO) в доменную модель репозитория.
-    /// </summary>
-    private GitHubRepo MapToDomainRepo(GitHubRepoDto dto) 
-    {
-        return new GitHubRepo 
-        {
-            Id = dto.Id,
-            Name = dto.Name,
-            FullName = dto.FullName,
-            Description = dto.Description,
-            Language = dto.Language,
-            StargazersCount = dto.StargazersCount,
-            ForksCount = dto.ForksCount,
-            Owner = dto.Owner != null ? MapToDomainUser(dto.Owner) : null 
-        };
     }
 }

@@ -1,6 +1,8 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
+namespace InternetTechLab1.Data.Models;
+
 public class ScrapedItemEntity
 {
     [BsonId]
